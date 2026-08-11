@@ -1,0 +1,13 @@
+{
+  "itemGroup.createcobblemon": "Example Mod Tab",
+  "block.createcobblemon.example_block": "Example Block",
+  "item.createcobblemon.example_item": "Example Item",
+
+  "createcobblemon.configuration.title": "CreateCobblemon Configs",
+  "createcobblemon.configuration.section.createcobblemon.common.toml": "CreateCobblemon Configs",
+  "createcobblemon.configuration.section.createcobblemon.common.toml.title": "CreateCobblemon Configs",
+  "createcobblemon.configuration.items": "Item List",
+  "createcobblemon.configuration.logDirtBlock": "Log Dirt Block",
+  "createcobblemon.configuration.magicNumberIntroduction": "Magic Number Text",
+  "createcobblemon.configuration.magicNumber": "Magic Number"
+}
