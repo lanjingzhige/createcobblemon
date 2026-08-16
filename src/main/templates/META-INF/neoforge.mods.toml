@@ -59,5 +59,13 @@ side="BOTH"
 modLoader="kotlinforforge"
 # Change this if you require a certain version of KotlinForForge
 loaderVersion="[5.10,)"
+
+
+[[dependencies.${mod_id}]]
+modId="create"
+type="required"
+versionRange="[6.0.10,6.1.0)"
+ordering="NONE"
+side="BOTH"
 #[features.${mod_id}]
 #openGLVersion="[3.2,)"
