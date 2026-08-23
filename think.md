@@ -100,8 +100,9 @@ return i << 20 | j << 4;
 
 ## 6. 已实施的修复
 
-- **渲染层方案1**：新增 `CB_TreadmillShaftVisual`，继承 Create 的 `SingleAxisRotatingVisual`，将 `updateLight` 改为采样 `pos.above()` 的光照。
+- **渲染层方案1**：新增 `CB_TreadmillShaftVisual`，继承 Create 的 `SingleAxisRotatingVisual`，`updateLight` 同时采样自身体素、上方体素与四侧体素，并取其中更亮的光照。
   - 在 `ModBlockEntity.CB_TREADMILL_ENTITY` 注册时改用 `CB_TreadmillShaftVisual::new`。
   - `renderNormally` 改为 `true`，避免 Flywheel 激活时跳过 `CB_TreadmillRenderer` 导致宝可梦不渲染。
-- **兜底路径同步修复**：`CB_TreadmillRenderer.renderSafe` 在无 Flywheel 时也改用上方体素光渲染传动轴，避免两条路径表现不一致。
+- **兜底路径恢复原版行为**：`CB_TreadmillRenderer.renderSafe` 保持原版/BlockEntityRenderDispatcher 传入的 `packedLight` 渲染传动轴，不再使用上方空气光照。
+- **宝可梦光照也取最大值**：`CB_TreadmillRenderer.calculateEntityLight` 同时采样宝可梦所在格、跑步机自身格以及周围方向，并修正 `LightTexture.pack(block, sky)` 参数顺序，避免上方被方块遮挡时宝可梦变黑。
 
