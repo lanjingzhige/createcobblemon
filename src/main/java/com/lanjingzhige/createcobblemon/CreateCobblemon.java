@@ -2,6 +2,7 @@ package com.lanjingzhige.createcobblemon;
 
 import com.lanjingzhige.createcobblemon.block.ModBlock;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
+import com.lanjingzhige.createcobblemon.network.TreadmillPackets;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
@@ -59,6 +60,9 @@ public class CreateCobblemon {
 
     public CreateCobblemon(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
+
+        // 网络包（跑步机界面）
+        modEventBus.addListener(TreadmillPackets::register);
 
 
         NeoForge.EVENT_BUS.register(this);

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "createcobblemon:block/cb_treadmill" },
+    "facing=east": { "model": "createcobblemon:block/cb_treadmill", "y": 90 },
+    "facing=south": { "model": "createcobblemon:block/cb_treadmill", "y": 180 },
+    "facing=west": { "model": "createcobblemon:block/cb_treadmill", "y": 270 }
+  }
+}
