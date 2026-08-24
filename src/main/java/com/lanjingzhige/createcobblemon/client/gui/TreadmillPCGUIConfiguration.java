@@ -15,6 +15,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * <p>
  * 玩家在电脑界面点击一只宝可梦时，向服务端发送放入跑步机的请求包。
  */
+//回调函数，可能会在IDE标红，正常现象
 public class TreadmillPCGUIConfiguration extends PCGUIConfiguration {
 
     private final BlockPos treadmillPos;

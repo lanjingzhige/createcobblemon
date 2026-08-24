@@ -1,108 +1,146 @@
-# CB_Treadmill 传动杆渲染为黑色的排查笔记
+# CB_Treadmill 宝可梦动画渲染笔记
 
-> 目标：解释"CB_Treadmill 渲染的传动杆是黑色的，而不是原版类似方块的颜色"，并给出修复方向。
-> 已确认：机械动力源码 `D:\Github\MCMOD\Create-mc1.21.1-6.0.10`；运行环境 Flywheel 1.0.6 已加载（`run/logs/latest.log` 有 "Flywheel 1.0.6"、"Loaded 77 shader sources"、"Started 6 worker threads"）。
-
----
-
-## 1. 两条传动轴渲染路径（Create）
-
-- **Flywheel 实例化路径（用户环境中激活）**：
-  - 注册：`ModBlockEntity.java` `.visual(() -> ShaftVisual::new, false)`（renderNormally=false → 原版 BE 渲染器被跳过，只画传动轴，不画宝可梦；注意：summary 里之前记的是 true，当前代码是 false）。
-  - `ShaftVisual` extends `SingleAxisRotatingVisual` → 构造时 `instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT)).createInstance().rotateToFace(UP, rotationAxis()).setup(be).setPosition(...)`，创建 `RotatingInstance`。
-  - `SingleAxisRotatingVisual.updateLight(pt)` → `relight(rotatingModel)` → `AbstractBlockEntityVisual.relight(FlatLit...)` → `relight(pos, instances)`，其中 `pos = blockEntity.getBlockPos()` → `FlatLit.relight(LevelRenderer.getLightColor(level, pos), instances)` → `instance.light(packedLight).handle().setChanged()`。
-  - 光何时写入：`Storage.setup()`（Flywheel 源码）在 visual 创建时调用 `lightUpdated.updateLight(partialTick)` **一次**；之后仅当 `onLightUpdate(section)` 事件发生时（`LightUpdatedVisualStorage.plan()`），才会再次 updateLight。`ClientChunkCacheMixin` 注入 `ClientChunkCache.onLightUpdate` → `manager.onLightUpdate(pos, layer)`。
-  - `RotatingInstance`（Create 类）继承 `ColoredLitInstance`，默认 `light = 0`（黑色）、color 白。
-  - GPU 写入：`AllInstanceTypes.ROTATING` layout 含 `vector("light", SHORT, 2)`，writer 用 `put2x16(ptr+4, instance.light)`。
-  - 顶点着色器 `rotating.vert`：`flw_vertexLight = max(vec2(instance.light)/256., flw_vertexLight)` → **最终光 = max(实例光, 模型烘焙光)**。
-
-- **原版渲染器路径（Flywheel 不活动时兜底）**：
-  - `KineticBlockEntityRenderer.renderSafe`：`if (VisualizationManager.supportsVisualization(be.getLevel())) return;` 否则 `standardKineticRotationTransform(be, ...)` 里 `buffer.light(light)`，light = `BlockEntityRenderDispatcher.setupAndRender` 传入的 `LevelRenderer.getLightColor(level, blockEntity.getBlockPos())`。
-  - 结论：**两条路径采样的都是"方块自身体素"的光**，所以黑色与路径无关，只与方块体素处的光照值有关。
+> 目标：解释为什么"猫鼬少（Yungoos）/ 魅力喵（Glameow）这类宝可梦在跑步机上不会播放行走动画"，
+> 以及如何在 `CB_TreadmillRenderer` 上渲染 行走 / 跑步 / 飞行 / 攻击 / 死亡 等动画。
+> 代码依据：Cobblemon 1.6.x（curse.maven:cobblemon-687131 / 7553231）反编译 + NeoForge 1.21.1 源码。
 
 ---
 
-## 2. 光照值怎么来（已逐段读 NeoForge 21.1.248 源码确认）
+## 1. 结论（本轮到此的修复）
 
-`LevelRenderer.getLightColor(level, state, pos)`（`build/moddev/artifacts/neoforge-21.1.248-sources.jar`）：
+- **根因**：Cobblemon 的行走动画分两套驱动：
+  1. `q.anim_time` 驱动的骨骼动画（`q.bedrock('x', 'ground_walk')`）—— 由合成实体的动画年龄推进，跑步机没问题；
+  2. 函数动画 `q.quadruped_walk / q.biped_walk / q.bimanual_swing` —— 直接使用原版的
+     `limbSwing / limbSwingAmount`（`LivingEntityRenderer.render` 从实体 `walkAnimation` 状态取出），
+     而 `walkAnimation` 只由 `LivingEntity#calculateEntityAnimation` 按实体**实际移动量**推进。
+  跑步机上的合成 `PokemonEntity` 从不移动 → 这两个值恒为 0 → 顺腿动画的振幅被乘成 0，
+  于是猫鼬少、魅力喵等以函数动画行走的宝可梦"姿势是行走、但腿完全不动"（看起来冻住了）。
+  妙蛙种子这类用 `q.bedrock('x','ground_walk')` 的则正常，因为动画按 `q.anim_time` 播放。
+- **修复**：在 `CB_TreadmillEntity.tick()`（客户端）每 tick 调
+  `clientPokemonEntity.walkAnimation.update(target, 1.0F)`，代替实体推进步态相位；
+  `target` 与跑步机实际转速（RPM）联动：`Mth.clamp(|getSpeed()| / 64F, 0.15F, 0.6F)`。
+  渲染时 `MobRenderer` 自动以 `walkAnimation.speed(partialTicks)`（振幅）/ `position(partialTicks)`（相位）插值。
 
-```java
-int i = level.getBrightness(LightLayer.SKY, pos);     // 方块自身体素
-int j = level.getBrightness(LightLayer.BLOCK, pos);
-int k = state.getLightEmission(level, pos);
-if (j < k) j = k;
-return i << 20 | j << 4;
+---
+
+## 2. 动画管线的完整数据流（合成实体）
+
+```
+CB_TreadmillEntity.tick()（客户端，每 tick）
+  ├─ delegate.tick(entity)            → PosableState.incrementAge → age+1（q.anim_time 的来源）
+  └─ entity.walkAnimation.update(...) → 推进 limbSwing / limbSwingAmount（顺腿函数动画的来源）
+
+CB_TreadmillRenderer.renderSafe（每帧）
+  └─ delegate.updatePartialTicks(partialTick)                     → q.anim_time = (age + partialTick) / 20
+     └─ EntityRenderDispatcher.render → PokemonRenderer.render
+        └─ MobRenderer.render → entity.walkAnimation.speed/position(partialTick)
+           └─ PosableEntityModel.setupAnim(limbSwing, limbSwingAmount, ...)
+              └─ PosableModel.applyAnimations(entity, state, limbSwing, ...)
+                 1. validatePose(entity, state)：拿 state.currentPose 与 entity.getCurrentPoseType() 匹配
+                    └─ 不一致时 getFirstSuitablePose(state, poseType)：第一个 poseTypes 含 poseType 且 isSuitable 的姿势
+                 2. pose.apply(...)：跑走路姿势里的全部动画（q.bedrock / q.quadruped_walk / q.look ...）
+                 3. primaryAnimation / activeAnimations（一次性动作：攻击、惨叫、昏厥等）
 ```
 
-- `Level` 未重写 `getBrightness`；`BlockAndTintGetter.getBrightness` 默认 = `getLightEngine().getLayerListener(type).getLightValue(pos)`。
-- **1.21.1 的 `getLightColor` 没有 1.20 里 `isSolidRender → pos.above()` 的分支**（1.20 才有"实体方块采样上方"）。`setupAndRender` 也是 `getLightColor(level, be.getBlockPos())`。
+要点：**姿势（Pose）**由 `PoseType` 决定，**动画播放**由 `q.anim_time`（年龄）与
+`limbSwing`（步态相位）两条钟共同驱动。合成实体两个钟都要自己手动推。
 
-### 方块体素存的是什么光
+### 关键 API 索引
 
-- `BlockBehaviour.getLightBlock(state, level, pos)`：
+| 用途 | API |
+| --- | --- |
+| 强制姿势 | `entity.getEntityData().set(PokemonEntity.getPOSE_TYPE(), PoseType.X)` + `entity.setEnablePoseTypeRecalculation(false)` |
+| 推进年龄 | `entity.getDelegate().tick(entity)`（每 tick）；`delegate.updatePartialTicks(pt)`（每帧） |
+| 推进步态 | `entity.walkAnimation.update(speed, 1.0F)`（每 tick，speed ≈ 振幅，也是相位增量） |
+| 姿势可用值 | PoseType：STAND, WALK, SLEEP, HOVER, FLY, FLOAT, SWIM, GLIDE, SHOULDER_LEFT, SHOULDER_RIGHT, PROFILE, PORTRAIT, OPEN, NONE |
+| 取动画 | `model.getAnimation(state, name, runtime)`；名字 = `"species:动画key"`（bedrock 文件）或 poser JSON 顶层的命名动画（如 `faint`/`cry`/`recoil`） |
+| 播放一次性动画 | `state.addActiveAnimation(anim, onDone)`（叠加）；`state.addPrimaryAnimation(primary)`（压过姿势动画） |
+| 姿势弹道 | `q.quadruped_walk / q.biped_walk / q.bimanual_swing / q.sine_wing_flap / q.look / q.punch / q.bedrock / q.bedrock_stateful / q.bedrock_primary`（定义于 `ClientMoLangFunctions.animationFunctions`） |
+
+---
+
+## 3. 行走 / 跑步
+
+- 姿势：`PoseType.WALK`（部分物种两个姿势都吃 WALK/SWIM）。
+- 行走动画来源（每个物种的 poser JSON，如 `bedrock/pokemon/posers/0734_yungoos/yungoos.json`）：
+  - `"walking": {"poseTypes":["WALK","SWIM"], "animations":["q.look('head')","q.bedrock('x','ground_idle')","q.quadruped_walk(...)"]}`
+  - 或用 bedrock 行走动画（妙蛙种子）：`q.bedrock('x','ground_walk')`。
+- 跑步 = 同一个 WALK 姿势，只是加快步态相位（提高 `walkAnimation` 的 target）并可选加大振幅：
+  - `target = Mth.clamp(|getSpeed()| / 64F, 0.15F, 0.6F)`（现状：转速联动，天然"越跑越快"）。
+  - 想要更强的"跑步"感：`target` 上限与每秒步频（`walkAnimation.position` 增量）再乘一个系数即可。
+- 注意不要给合成实体加 `deltaMovement`：渲染位移由 `CB_TreadmillRenderer` 固定翻译，移动只是欺骗。
+- **先决条件**：合成实体的 `PoseType` 必须被强制为 WALK，且 `setEnablePoseTypeRecalculation(false)`，
+  否则服务端/客户端姿态重算会把静止实体判回 STAND。
+
+---
+
+## 4. 飞行
+
+- 姿势：`PoseType.FLY`（拍翼）、`PoseType.HOVER`（浮空不动）、`PoseType.GLIDE`（滑翔，如坠落）。
+- 姿势数据：物种 poser JSON 里有 `poseTypes` 含 FLY/HOVER 的姿势（如 `q.bedrock('x','fly')`、`q.sine_wing_flap(...)` 拍翼）时才有飞行姿态；
+  没有飞行姿势的物种会回退到第一个姿势（stand），属于 Cobblemon 数据限制。
+- 渲染步骤：
+  1. `entity.getEntityData().set(PokemonEntity.getPOSE_TYPE(), PoseType.FLY)`（或 HOVER/GLIDE）；
+  2. `entity.setNoGravity(true)`，并把合成实体抬到空中（`setPos` y+若干 / 渲染时 `poseStack.translate`），
+     否则模型会站在跑道上；
+  3. 年龄照常 `delegate.tick` 推进 —— 飞行动画基本按 `q.anim_time` 播放（`q.sine_wing_flap` 的 WaveFunction 也按时间驱动），
+     不需要额外推进 `walkAnimation`（除非该物种飞行姿态用了顺腿类函数动画）。
+  - 若想要"绕圈飞行"，还需每 tick 更新朝向（`yBodyRot`）与 `setPos` 的平移。
+
+---
+
+## 5. 攻击
+
+一次性动作，不走姿势系统，而是往 `PosableState.activeAnimations / primaryAnimation` 里塞动画：
+
+```java
+PosableModel model = VaryingModelRepository.INSTANCE.getPoser(species, delegate);
+ActiveAnimation anim = model.getAnimation(delegate, "yungoos:hurt", delegate.getRuntime()); // 名字 = "species:key"
+if (anim instanceof PrimaryAnimation primary) {
+    delegate.addPrimaryAnimation(primary);            // 覆盖行走姿势短暂播完，再回到姿势
+} else {
+    delegate.addActiveAnimation(anim, state -> {});   // 叠加播放，播完自动移除
+}
+```
+
+- 可用 key：该物种 bedrock 动画文件里的任意动画（如 `hurt`/`recoil`/`shock`/`angry`/`attack` 等，按物种存在性各异），
+  或 poser JSON 顶层的命名动画（`"animations":{"faint":..., "cry":..., "recoil":...}`）。
+- `q.punch('head','body','leftArm','rightArm', swingRight)`（`PunchAnimation`）是适合人形的函数攻击动画，
+  一般写在 poser JSON 的战斗姿势里，Java 侧同样可以 `model.getAnimation(delegate, "q.punch...", ...)` 不支持直接传表达式串——
+  正确做法是用 `state.getRuntime()` 解析 MoLang：`MoLangExtensionsKt.resolve(runtime, "q.punch('head',...)")`。
+- 更贴近 Cobblemon 战斗的做法：`state.addPrimaryAnimation(...)` 播完自动回到姿势（PrimaryAnimation 到期后 `afterAction` 被调用）。
+- 想让攻击带音效：动画文件的 `sound_effects` 或播放物种叫声 `delegate.cry()`（`getCryAnimation`）。
+
+---
+
+## 6. 死亡（昏厥）
+
+Cobblemon 的死亡动画 = `faint`（bedrock 动画，通常是 `primary` 类型）：
+
+- 最省事的路径（与正式游戏完全一致）：
   ```java
-  if (state.isSolidRender(level, pos)) return level.getMaxLightLevel(); // 15
-  else return state.propagatesSkylightDown(level, pos) ? 0 : 1;
+  entity.getEntityData().set(PokemonEntity.getDYING_EFFECTS_STARTED(), true);
   ```
-- `isSolidRender = canOcclude() ? Block.isShapeFullBlock(getOcclusionShape) : false`。
-- `propagatesSkylightDown = !Block.isShapeFullBlock(state.getShape(level,pos)) && fluid为空`。
-- **关键：`Properties.noOcclusion()` 只设置 `canOcclude = false`。** 跑步机用了 `.noOcclusion()` → `canOcclude=false` → `isSolidRender=false` → `lightBlock` 不可能是 15。
-  - 跑步机 `getShape` 默认 `Shapes.block()`（完整立方体）→ `propagatesSkylightDown=false` → **`getLightBlock = 1`**。
-- 光照引擎：
-  - `getOpacity(state) = max(1, state.getLightBlock(...))` → 跑步机 opacity = 1。
-  - `BlockLightEngine.propagateIncrease`：进入相邻体素的光 = `lightLevel - getOpacity`；只有结果 `> 已存值` 才写入。
-  - 跑步机 `useShapeForLightOcclusion=false` → `isEmptyShape=true` → 光照引擎把它当"空形状"，光可以穿入 → 相邻 15 级空气时，跑步机体素应存 **14**。
-  - `SkyLightSectionStorage.getLightValue`：体素所在 section 在"顶部 section"之下 → 返回该体素**存储值**；处于/高于顶部 section → 返回 15。
-  - `ChunkSkyLightSources.isEdgeOccluded`：`state2.getLightBlock != 0` 即视为遮挡天空 → 跑步机 `lightBlock=1` 会挡住天空（算作该列天空源的最低点）→ 上方无遮挡时，跑步机体素由传播得到 ~14（15-1）。
-
-### 与"方块外观"对比（为什么方块盒子亮而轴黑，才叫 bug）
-
-- 方块本体（block model）的光是**面片光**，取自相邻空气体素（亮）。
-- 传动轴（BE visual / renderer）的光取自**方块自身体素**。
-- 因此只要"自身体素"比"相邻空气"暗，就会出现：盒子亮、轴黑。
+  `PokemonClientDelegate.onSyncedDataUpdated` 检测到该数据变化后会自动
+  `model.getAnimation(state, "faint", runtime)` → `addPrimaryAnimation`，并在 3 秒后触发回调。
+- 手动路径：
+  ```java
+  ActiveAnimation faint = model.getAnimation(delegate, "faint", delegate.getRuntime()); // poser JSON 命名动画
+  delegate.addPrimaryAnimation((PrimaryAnimation) faint);
+  ```
+- 倒地带红闪：`entity.hurtTime` / `entity.deathTime > 0` 时 `PosableEntityModel.getOverlayTexture`
+  会输出红色 overlay（`OverlayTexture.pack(u, v=1)`）；合成实体的 `deathTime` 需手动递增
+  （`delegate.updatePostDeath()` 每次 `deathTime++`，见 `PokemonClientDelegate.updatePostDeath`）。
+- 昏厥后通常还要 `entity.setHealth(0)`（影响 `LivingEntityRenderer` 的躺倒姿态）与停止 `walkAnimation` 推进，
+  并把姿势换成 `STAND`（或物种的 `sleep` 姿势）避免"走着死"。
 
 ---
 
-## 3. 尚未解决的矛盾（核心）
+## 7. 通用注意事项
 
-- **矛盾 A（跑步机应亮）**：按上面推导，暴露在露天/亮处时，跑步机体素 sky≈14、block≈14 → `getLightColor` 明亮 → 传动轴应显示为浅灰色，不应纯黑。
-- **矛盾 B（压机先例）**：Create 的 `MechanicalPress` 是全不透明实体方块，`PressVisual.updateLight` 也是 `relight` 到压机自身体素，压机机头却正常受光显示——说明**不透明方块的自身体素在实际游戏里并非全黑**（原因：`useShapeForLightOcclusion=false` → 光能穿入 → 存储值 = 相邻光 − opacity）。这与 A 一致。
-- **矛盾 C（宝箱类比）**：箱子形状非满立方 → `isSolidRender=false` → lightBlock=0/1 → 体素也亮。此"宝箱悖论"已由 `noOcclusion → lightBlock=1` 的分析解决：**满立方 + canOcclude=false → lightBlock=1（不是15）→ 体素不黑**。
-
-结论：按源码推演，**室外亮处跑步机传动轴不应黑**。但用户看到黑轴。所以要么：
-
-1. 用户测试环境里跑步机体素确实暗（室内/屋顶/洞穴/被遮挡 → sky 0 + block 0）——此时普通传动轴也会黑，不算 bug；但用户说"原版类似方块"不黑，需要现场对比确认。
-2. 我的某一步推导有误（最可疑：sky 的 `getLightValue` 顶部 section 判定、或跑步机并非"该列顶部遮挡块"）。
-3. 实例光值正确但被别处覆盖：`rotating.vert` 里 `max(instance.light/256, flw_vertexLight)`——若 **模型烘焙光 `flw_vertexLight` 为 0** 且实例光也为 0 → 黑。**实例光为什么是 0？** `Storage.setup` 只在 visual 创建时调用一次 `updateLight`；若此时跑步机体素光还未算好（刚放置/区块刚加载），读到 0，之后靠 `onLightUpdate` 事件补救。若该事件没触发（例如客户端与服务端光同步时序、或该 section 光已是最新不再有更新事件）→ **一直黑**。
-
----
-
-## 4. 最可疑根因（按可能性排序）
-
-1. **`updateLight` 初始读到的光为 0，且此后该 section 没有再触发 `onLightUpdate` → 传动轴永远以 `light=0` 渲染**。普通方块（压机）可能因为其 section 光变化频繁/创建时序不同而正常。这是时序性/竞态问题，与方块自身是否不透明无关——这能解释"为什么只有我的方块黑"。
-2. **测试场景本身暗**（跑步机在暗处），需要用户确认对比场景。
-3. 方块模型里 east/west 用 `andesite_funnel_frame`（透明窗），透过窗看到黑轴；若箱体本身足够亮而轴全黑，观感差异明显。
-
----
-
-## 5. 待验证 / 下一步
-
-- 读 `Flywheel` 的 `ClientChunkCache.onLightUpdate` 触发条件，确认"放置新方块后该 section 是否必然触发一次 light update"。
-- 确认用户测试时跑步机是否露天/受光。
-- 若确认是"初始光 0 且不再刷新"，修复方向：
-  - **方案1（渲染层，最贴近目标）**：自定义 visual，把 `updateLight` 改为采样更亮的体素，例如 `relight(pos.above(), rotatingModel)`（模拟旧版 `isSolidRender → pos.above()` 行为），只影响轴的亮度。
-  - **方案2（方块层）**：让跑步机体素不挡光，使体素光更接近相邻空气。例如覆写 `getLightBlock` 返回 0（→opacity=1）或覆写 `getOcclusionShape` 返回空形状（→lightBlock 更小），副作用：光会更"漏"到下方/周围方块。
-  - **方案3（视觉层）**：`updateLight` 里手动用 `FlatLit.relight(LightTexture.pack(15,15))` 之类强制给轴满光（最粗暴，忽略环境）。
-
-> 注：修改代码前需征得用户同意（内存约束 ask-only-before-modifying-code）。
-
----
-
-## 6. 已实施的修复
-
-- **渲染层方案1**：新增 `CB_TreadmillShaftVisual`，继承 Create 的 `SingleAxisRotatingVisual`，`updateLight` 同时采样自身体素、上方体素与四侧体素，并取其中更亮的光照。
-  - 在 `ModBlockEntity.CB_TREADMILL_ENTITY` 注册时改用 `CB_TreadmillShaftVisual::new`。
-  - `renderNormally` 改为 `true`，避免 Flywheel 激活时跳过 `CB_TreadmillRenderer` 导致宝可梦不渲染。
-- **兜底路径恢复原版行为**：`CB_TreadmillRenderer.renderSafe` 保持原版/BlockEntityRenderDispatcher 传入的 `packedLight` 渲染传动轴，不再使用上方空气光照。
-- **宝可梦光照也取最大值**：`CB_TreadmillRenderer.calculateEntityLight` 同时采样宝可梦所在格、跑步机自身格以及周围方向，并修正 `LightTexture.pack(block, sky)` 参数顺序，避免上方被方块遮挡时宝可梦变黑。
-
+1. 合成实体从不进世界：所有"实体自己会做的事"都要手动模拟 —— 年龄、步态、姿态数据、朝向。
+2. `setEnablePoseTypeRecalculation(false)` 是前置条件；否则每帧姿态重算会把 WALK 打回 STAND。
+3. 姿势回退：`getFirstSuitablePose` 找不到匹配时会用**第一个姿势**，所以"不动的动物/无飞行姿态"表现正常但"跳不出动画"属数据缺失。
+4. 部分物种的 walking 姿势把 WALK 和 SWIM 共用；把宝可梦放到水景/下界等场景时二选一即可。
+5. 修改 `PoseType` 后建议清掉 `delegate.currentPose`（`setPoseToFirstSuitable(poseType)` 会重新选，
+   或直接 `setPose(null)` 兼容字段）避免旧姿势残留 —— `getAnimation`/`validatePose` 都以 `currentPose` 为缓存。

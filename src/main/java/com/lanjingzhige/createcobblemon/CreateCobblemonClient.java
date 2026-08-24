@@ -30,9 +30,7 @@ public class CreateCobblemonClient {
         CreateCobblemon.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 
-    /**
-     * 服务端请求打开跑步机的电脑界面（与牧场方块相同的 PCGUI 流程）。
-     */
+
     public static void handleOpenTreadmill(TreadmillOpenScreenPacket payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             ClientPC pc = CobblemonClient.INSTANCE.getStorage().getPcStores().get(payload.pcId());

@@ -30,7 +30,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * 跑步机方块：机械动力发电机。
  * <p>
  * 水平放置，宝可梦沿 facing 方向跑步；侧面（垂直于 facing 轴）可接传动轴输出动力。
- * 应力 = 容量 32 × 转速 8 = 256 SU（有宝可梦时）。
+ * 应力 = 容量 32 SU/RPM × 转速 RPM（转速 = 宝可梦当前速度值，宝可梦越快应力越高）。
  * <p>
  * 交互：
  * 右键      —— 打开电脑界面选择宝可梦放入

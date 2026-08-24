@@ -16,7 +16,8 @@ public class ModBlock {
     public static final CreateRegistrate REGISTRATE = CreateCobblemon.REGISTRATE;
 
     /**
-     * 跑步机：容量 32 SU/RPM × 转速 8 RPM = 256 SU（复制水车注册模式）。
+     * 跑步机：容量 32 SU/RPM，转速由宝可梦速度决定（see CB_TreadmillEntity#getGeneratedSpeed），
+     * 宝可梦速度越快，提供的应力越高。
      * <p>
      * 注意：CStress.setCapacity() 是 Create 内部配置助手，只允许 Create 自己的方块使用，
      * 附属模组必须通过公开 API BlockStressValues.CAPACITIES 注册（onRegister 回调中拿到 Block 实例）。
@@ -25,7 +26,8 @@ public class ModBlock {
         .initialProperties(SharedProperties::wooden)
         .properties(p -> p.noOcclusion())
         .transform(axeOrPickaxe())
-        .onRegister(BlockStressValues.setGeneratorSpeed(8))
+        // 转速随宝可梦变化，名义转速仅用于静态工具提示，用 mayGenerateLess=true（“最多”语义）
+        .onRegister(BlockStressValues.setGeneratorSpeed(8, true))
         .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 32))
         .item()
         .transform(customItemModel())

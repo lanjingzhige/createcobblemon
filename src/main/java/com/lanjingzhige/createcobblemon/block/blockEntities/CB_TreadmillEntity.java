@@ -2,6 +2,7 @@ package com.lanjingzhige.createcobblemon.block.blockEntities;
 
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.CobblemonEntities;
+import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
@@ -12,6 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -25,7 +27,7 @@ import java.util.UUID;
  * 客户端：根据同步的 NBT 重建一个“合成”的 PokemonEntity（不加入世界），由方块实体渲染器
  * 每帧渲染，并在 tick 中手动推进其动画年龄以播放行走动画。
  * <p>
- * 应力：容量 32 SU/RPM × 转速 8 RPM = 256 SU。
+ * 应力：驱动转速 = 宝可梦当前速度值（RPM），容量 32 SU/RPM → 宝可梦速度越快，提供的应力（SU）越高。
  */
 public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
 
@@ -33,9 +35,8 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
     private static final String KEY_POKEMON_UUID = "PokemonUuid";
     private static final String KEY_PC_UUID = "PcUuid";
     private static final String KEY_OWNER_UUID = "OwnerUuid";
-
-    /** 有宝可梦跑步时的发电机转速（RPM）。容量 32 × 转速 8 = 256 SU */
-    public static final float GENERATED_SPEED = 8.0f;
+    /** 服务端在 setPokemon 时缓存的引用；chunk 重载或客户端上为 null，需从 NBT 懒加载 */
+    private Pokemon pokemon;
 
     @Nullable
     private CompoundTag pokemonNbt;
@@ -60,8 +61,33 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
 
     @Override
     public float getGeneratedSpeed() {
-        return hasPokemon() ?
-                GENERATED_SPEED : 0.0f;
+        Pokemon pokemon = getPokemon();
+        if (pokemon == null)
+            return 0.0f;
+        // 直接用宝可梦当前速度值作为生成转速（RPM）。
+        // Create 网络中发电机提供的应力 = 容量(32 SU/RPM) × |转速|，因此宝可梦速度越快，应力越高。
+        return pokemon.getStat(Stats.SPEED);
+    }
+
+    /**
+     * 返回当前宝可梦；没有宝可梦、数据不可用或世界尚未加载时返回 null。
+     * <p>
+     * 服务端 setPokemon() 时缓存引用；chunk 重载后 read() 只恢复 NBT 快照、引用丢失，
+     * 因此这里按需从 NBT 懒加载并缓存（客户端同样适用，护目镜悬浮信息等场景会调用）。
+     */
+    @Nullable
+    private Pokemon getPokemon() {
+        if (pokemon != null)
+            return pokemon;
+        if (pokemonNbt == null || level == null)
+            return null;
+        try {
+            pokemon = new Pokemon().loadFromNBT(level.registryAccess(), pokemonNbt);
+        } catch (Exception e) {
+            // 数据不合法时视为没有宝可梦，不影响方块功能
+            pokemon = null;
+        }
+        return pokemon;
     }
 
     /**
@@ -97,6 +123,7 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
         this.pcUuid = pc.getUuid();
         this.ownerUuid = player.getUUID();
         this.clientPokemonEntity = null;
+        this.pokemon = pokemon;
 
         updateGeneratedRotation();
         notifyChange();
@@ -129,6 +156,7 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
     }
 
     private void clearPokemonData() {
+        this.pokemon = null;
         this.pokemonNbt = null;
         this.pokemonUuid = null;
         this.pcUuid = null;
@@ -171,7 +199,8 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
         this.pokemonUuid = tag.hasUUID(KEY_POKEMON_UUID) ? tag.getUUID(KEY_POKEMON_UUID) : null;
         this.pcUuid = tag.hasUUID(KEY_PC_UUID) ? tag.getUUID(KEY_PC_UUID) : null;
         this.ownerUuid = tag.hasUUID(KEY_OWNER_UUID) ? tag.getUUID(KEY_OWNER_UUID) : null;
-        // 数据可能已变化，客户端实体需要在下次访问时重建
+        // 数据可能已变化，缓存的宝可梦引用与客户端实体均需在下次访问时重建
+        this.pokemon = null;
         this.clientPokemonEntity = null;
     }
 
@@ -209,7 +238,32 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
     public void tick() {
         super.tick();
         // 客户端：手动推进合成实体的动画年龄（delegate.tick -> incrementAge）
-        if (level != null && level.isClientSide() && clientPokemonEntity != null)
+        if (level != null && level.isClientSide() && clientPokemonEntity != null) {
             clientPokemonEntity.getDelegate().tick(clientPokemonEntity);
+            driveWalkAnimation();
+        }
+    }
+
+    /**
+     * 推进合成实体的原版步态状态（{@code walkAnimation}）。
+     * <p>
+     * Cobblemon 的行走动画分两类：
+     * <ul>
+     *   <li>由 {@code q.anim_time} 驱动的骨骼动画（如 {@code q.bedrock('x', 'ground_walk')}），
+     *       只要动画年龄在推进就会动，跑步机上的合成宝可梦没问题；</li>
+     *   <li>函数动画（{@code q.quadruped_walk / q.biped_walk / q.bimanual_swing}），
+     *       直接使用原版的 {@code limbSwing / limbSwingAmount}（见
+     *       {@code LivingEntity#calculateEntityAnimation}，振幅来自实体实际移动量）。</li>
+     * </ul>
+     * 跑步机上的合成实体从不移动，第二类的两个值恒为 0，于是猫鼬少、魅力喵等
+     * 以顺腿函数动画行走的宝可梦会僵立在跑步机上（姿势是行走姿势，但腿完全不动）。
+     * 这里代替实体每 tick 递增步态相位：{@code walkAnimation} 推进后，渲染时由
+     * {@code MobRenderer} 通过 {@code walkAnimation.speed(partialTicks)}（振幅）与
+     * {@code walkAnimation.position(partialTicks)}（相位）插值，顺腿动画即可正常播放。
+     * 步态速率与跑步机实际转速（RPM）联动：转速越高跑得越快，最低保底原地小跑。
+     */
+    private void driveWalkAnimation() {
+        float target = Mth.clamp(Math.abs(getSpeed()) / 64.0F, 0.15F, 0.6F);
+        clientPokemonEntity.walkAnimation.update(target, 1.0F);
     }
 }
