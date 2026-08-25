@@ -3,7 +3,7 @@ package com.lanjingzhige.createcobblemon.block.blocks;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
@@ -35,7 +35,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * 右键      —— 打开电脑界面选择宝可梦放入
  * 潜行右键  —— 释放当前宝可梦，归还其电脑
  */
-public class CB_Treadmill extends HorizontalKineticBlock implements IBE<CB_TreadmillEntity> {
+public class CB_Treadmill extends HorizontalKineticBlock implements IBE<CBE_Treadmill> {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty FLY = BooleanProperty.create("fly");
@@ -67,7 +67,7 @@ public class CB_Treadmill extends HorizontalKineticBlock implements IBE<CB_Tread
                                                BlockHitResult hitResult) {
         if (player.isShiftKeyDown()) {
             // 潜行右键：释放当前宝可梦
-            withBlockEntityDo(level, pos, CB_TreadmillEntity::releasePokemon);
+            withBlockEntityDo(level, pos, CBE_Treadmill::releasePokemon);
             level.setBlock(pos,level.getBlockState(pos).setValue(FLY, false),3);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
@@ -82,17 +82,17 @@ public class CB_Treadmill extends HorizontalKineticBlock implements IBE<CB_Tread
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         // 先归还宝可梦，再让 super 清理方块实体与动力网络
         if (!level.isClientSide && state.hasBlockEntity() && state.getBlock() != newState.getBlock())
-            withBlockEntityDo(level, pos, CB_TreadmillEntity::releasePokemon);
+            withBlockEntityDo(level, pos, CBE_Treadmill::releasePokemon);
         super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override
-    public Class<CB_TreadmillEntity> getBlockEntityClass() {
-        return CB_TreadmillEntity.class;
+    public Class<CBE_Treadmill> getBlockEntityClass() {
+        return CBE_Treadmill.class;
     }
 
     @Override
-    public BlockEntityType<? extends CB_TreadmillEntity> getBlockEntityType() {
+    public BlockEntityType<? extends CBE_Treadmill> getBlockEntityType() {
         return ModBlockEntity.CB_TREADMILL_ENTITY.get();
     }
 

@@ -2,7 +2,7 @@ package com.lanjingzhige.createcobblemon.block.renderer;
 
 import com.cobblemon.mod.common.client.entity.PokemonClientDelegate;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.block.blocks.CB_Treadmill;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
@@ -26,14 +26,14 @@ import net.minecraft.world.phys.AABB;
  * 使用 {@link LevelRenderer#getLightColor} 取得打包光照，
  * 不做任何人为的亮度提升或环境光兜底。
  */
-public class CB_TreadmillRenderer extends KineticBlockEntityRenderer<CB_TreadmillEntity> {
+public class CB_TreadmillRenderer extends KineticBlockEntityRenderer<CBE_Treadmill> {
 
     public CB_TreadmillRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    protected void renderSafe(CB_TreadmillEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
+    protected void renderSafe(CBE_Treadmill blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
         // 传动轴沿用传入的 packedLight，正常渲染
         super.renderSafe(blockEntity, partialTick, poseStack, buffer, packedLight, packedOverlay);
 
@@ -65,12 +65,12 @@ public class CB_TreadmillRenderer extends KineticBlockEntityRenderer<CB_Treadmil
     }
 
     @Override
-    public AABB getRenderBoundingBox(CB_TreadmillEntity blockEntity) {
+    public AABB getRenderBoundingBox(CBE_Treadmill blockEntity) {
         return new AABB(blockEntity.getBlockPos()).inflate(2.0);
     }
 
     @Override
-    protected BlockState getRenderedBlockState(CB_TreadmillEntity be) {
+    protected BlockState getRenderedBlockState(CBE_Treadmill be) {
         return shaft(getRotationAxisOf(be));
     }
 }

@@ -1,7 +1,7 @@
 package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.block.renderer.CB_TreadmillRenderer;
 import com.lanjingzhige.createcobblemon.block.visual.CB_TreadmillShaftVisual;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -11,8 +11,8 @@ public class ModBlockEntity {
 
     public static final CreateRegistrate REGISTRATE = CreateCobblemon.REGISTRATE;
 
-    public static final BlockEntityEntry<CB_TreadmillEntity> CB_TREADMILL_ENTITY =
-        REGISTRATE.blockEntity("cb_treadmill", CB_TreadmillEntity::new)
+    public static final BlockEntityEntry<CBE_Treadmill> CB_TREADMILL_ENTITY =
+        REGISTRATE.blockEntity("cb_treadmill", CBE_Treadmill::new)
             // Flywheel visual：在旋转轴上渲染传动轴（与 renderer 的 getRenderedBlockState 一致）。
             // renderNormally = true 必须保留：CB_TreadmillRenderer 还要负责渲染宝可梦，
             // 设为 false 会连宝可梦一起消失。

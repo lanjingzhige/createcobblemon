@@ -1,6 +1,6 @@
 package com.lanjingzhige.createcobblemon.block.visual;
 
-import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 
@@ -22,9 +22,9 @@ import net.minecraft.world.level.LightLayer;
  *     <li>上方被方块遮挡时轴跟着上方一起变黑。</li>
  * </ul>
  */
-public class CB_TreadmillShaftVisual extends SingleAxisRotatingVisual<CB_TreadmillEntity> {
+public class CB_TreadmillShaftVisual extends SingleAxisRotatingVisual<CBE_Treadmill> {
 
-    public CB_TreadmillShaftVisual(VisualizationContext context, CB_TreadmillEntity blockEntity, float partialTick) {
+    public CB_TreadmillShaftVisual(VisualizationContext context, CBE_Treadmill blockEntity, float partialTick) {
         super(context, blockEntity, partialTick, Models.partial(AllPartialModels.SHAFT));
     }
 

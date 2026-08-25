@@ -2,7 +2,7 @@ package com.lanjingzhige.createcobblemon.network;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
 import com.lanjingzhige.createcobblemon.CreateCobblemonClient;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillPlacePokemonPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -38,7 +38,7 @@ public class TreadmillPackets {
                 // 防御：校验距离，防止远程注入
                 if (player.distanceToSqr(Vec3.atCenterOf(payload.pos())) > 64 * 64)
                     return;
-                if (level.getBlockEntity(payload.pos()) instanceof CB_TreadmillEntity blockEntity)
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_Treadmill blockEntity)
                     blockEntity.setPokemon(player, payload.pokemonUuid());
             }
         });
