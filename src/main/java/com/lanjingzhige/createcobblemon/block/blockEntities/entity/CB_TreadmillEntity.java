@@ -1,12 +1,14 @@
-package com.lanjingzhige.createcobblemon.block.blockEntities;
+package com.lanjingzhige.createcobblemon.block.blockEntities.entity;
 
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.CobblemonEntities;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
+import com.cobblemon.mod.common.api.types.ElementalType;
 import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.lanjingzhige.createcobblemon.block.blocks.CB_Treadmill;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -66,6 +68,7 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
             return 0.0f;
         // 直接用宝可梦当前速度值作为生成转速（RPM）。
         // Create 网络中发电机提供的应力 = 容量(32 SU/RPM) × |转速|，因此宝可梦速度越快，应力越高。
+
         return pokemon.getStat(Stats.SPEED);
     }
 
@@ -124,6 +127,14 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
         this.ownerUuid = player.getUUID();
         this.clientPokemonEntity = null;
         this.pokemon = pokemon;
+        for (ElementalType type : pokemon.getTypes()) {
+            if (type.showdownId().equals("flying")){
+                level.setBlock(worldPosition,
+                        getBlockState().setValue(CB_Treadmill.FLY, true),
+                        3);
+                System.out.println("00");
+            }
+        }
 
         updateGeneratedRotation();
         notifyChange();
@@ -225,7 +236,19 @@ public class CB_TreadmillEntity extends GeneratingKineticBlockEntity {
             clientPokemonEntity = new PokemonEntity(level, pokemon, CobblemonEntities.POKEMON);
             clientPokemonEntity.setEnablePoseTypeRecalculation(false);
             clientPokemonEntity.setNoAi(true);
-            clientPokemonEntity.getEntityData().set(PokemonEntity.getPOSE_TYPE(), PoseType.WALK);
+            for (ElementalType type : pokemon.getTypes()) {
+                if (type.showdownId().equals("flying")){
+                    level.setBlock(worldPosition,
+                            getBlockState().setValue(CB_Treadmill.FLY, true),
+                            3);
+                    clientPokemonEntity.getEntityData().set(PokemonEntity.getPOSE_TYPE(), PoseType.FLY);
+                    System.out.println("00");
+                }
+                else {
+                    clientPokemonEntity.getEntityData().set(PokemonEntity.getPOSE_TYPE(), PoseType.WALK);
+                }
+            }
+
             clientPokemonEntity.setInvulnerable(true);
             clientPokemonEntity.setPos(worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5);
         } catch (Exception e) {

@@ -2,7 +2,7 @@ package com.lanjingzhige.createcobblemon.network;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
 import com.lanjingzhige.createcobblemon.CreateCobblemonClient;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.entity.CB_TreadmillEntity;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillPlacePokemonPacket;
 import net.minecraft.server.level.ServerLevel;

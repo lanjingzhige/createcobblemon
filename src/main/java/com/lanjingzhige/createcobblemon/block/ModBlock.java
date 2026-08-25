@@ -26,12 +26,22 @@ public class ModBlock {
         .initialProperties(SharedProperties::wooden)
         .properties(p -> p.noOcclusion())
         .transform(axeOrPickaxe())
-        // 转速随宝可梦变化，名义转速仅用于静态工具提示，用 mayGenerateLess=true（“最多”语义）
         .onRegister(BlockStressValues.setGeneratorSpeed(8, true))
-        .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 32))
+        .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 16))
         .item()
         .transform(customItemModel())
         .register();
+
+
+    public static final BlockEntry<CB_Treadmill> CB_GARBAGE = REGISTRATE.block("cb_garbage", CB_Treadmill::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(p -> p.noOcclusion())
+            .transform(axeOrPickaxe())
+            .onRegister(BlockStressValues.setGeneratorSpeed(8, true))
+            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 16))
+            .item()
+            .transform(customItemModel())
+            .register();
 
     public static void register() {
         // 静态字段在类加载时完成注册

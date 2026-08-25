@@ -1,8 +1,13 @@
 {
   "variants": {
-    "facing=north": { "model": "createcobblemon:block/cb_treadmill" },
-    "facing=east": { "model": "createcobblemon:block/cb_treadmill", "y": 90 },
-    "facing=south": { "model": "createcobblemon:block/cb_treadmill", "y": 180 },
-    "facing=west": { "model": "createcobblemon:block/cb_treadmill", "y": 270 }
+    "facing=north,fly=false": { "model": "createcobblemon:block/cb_treadmill" },
+    "facing=east,fly=false": { "model": "createcobblemon:block/cb_treadmill", "y": 90 },
+    "facing=south,fly=false": { "model": "createcobblemon:block/cb_treadmill", "y": 180 },
+    "facing=west,fly=false": { "model": "createcobblemon:block/cb_treadmill", "y": 270 },
+
+    "facing=north,fly=true": { "model": "createcobblemon:block/cb_treadmill_fly" },
+    "facing=east,fly=true": { "model": "createcobblemon:block/cb_treadmill_fly", "y": 90 },
+    "facing=south,fly=true": { "model": "createcobblemon:block/cb_treadmill_fly", "y": 180 },
+    "facing=west,fly=true": { "model": "createcobblemon:block/cb_treadmill_fly", "y": 270 }
   }
 }

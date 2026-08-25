@@ -3,10 +3,9 @@ package com.lanjingzhige.createcobblemon.block.blocks;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.entity.CB_TreadmillEntity;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
-import com.simibubi.create.content.kinetics.base.KineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,7 +13,6 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -22,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -39,14 +38,17 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class CB_Treadmill extends HorizontalKineticBlock implements IBE<CB_TreadmillEntity> {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty FLY = BooleanProperty.create("fly");
 
     public CB_Treadmill(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FLY, false));
     }
 
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
+        builder.add(FLY);
     }
 
     @Override
@@ -66,6 +68,7 @@ public class CB_Treadmill extends HorizontalKineticBlock implements IBE<CB_Tread
         if (player.isShiftKeyDown()) {
             // 潜行右键：释放当前宝可梦
             withBlockEntityDo(level, pos, CB_TreadmillEntity::releasePokemon);
+            level.setBlock(pos,level.getBlockState(pos).setValue(FLY, false),3);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         if (!level.isClientSide) {
