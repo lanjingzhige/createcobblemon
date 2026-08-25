@@ -1,6 +1,6 @@
-package com.lanjingzhige.createcobblemon.block.blockEntities.visual;
+package com.lanjingzhige.createcobblemon.block.visual;
 
-import com.lanjingzhige.createcobblemon.block.blockEntities.entity.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 

@@ -1,9 +1,9 @@
 package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
-import com.lanjingzhige.createcobblemon.block.blockEntities.entity.CB_TreadmillEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.renderer.CB_TreadmillRenderer;
-import com.lanjingzhige.createcobblemon.block.blockEntities.visual.CB_TreadmillShaftVisual;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.renderer.CB_TreadmillRenderer;
+import com.lanjingzhige.createcobblemon.block.visual.CB_TreadmillShaftVisual;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 

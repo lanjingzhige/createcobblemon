@@ -1,4 +1,4 @@
-package com.lanjingzhige.createcobblemon.block.blockEntities.entity;
+package com.lanjingzhige.createcobblemon.block.blockEntities;
 
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.CobblemonEntities;

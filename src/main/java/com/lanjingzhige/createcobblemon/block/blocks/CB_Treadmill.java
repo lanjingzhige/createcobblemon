@@ -3,7 +3,7 @@ package com.lanjingzhige.createcobblemon.block.blocks;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.entity.CB_TreadmillEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CB_TreadmillEntity;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
