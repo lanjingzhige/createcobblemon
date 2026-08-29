@@ -93,7 +93,7 @@ public class CB_Treadmill extends HorizontalKineticBlock implements IBE<CBE_Trea
 
     @Override
     public BlockEntityType<? extends CBE_Treadmill> getBlockEntityType() {
-        return ModBlockEntity.CB_TREADMILL_ENTITY.get();
+        return ModBlockEntity.CBE_TREADMILL.get();
     }
 
     @Override

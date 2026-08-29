@@ -3,14 +3,18 @@ package com.lanjingzhige.createcobblemon.block.blocks;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
 import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
+import com.simibubi.create.content.kinetics.base.KineticBlock;
+import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -23,28 +27,19 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-public class CB_GARBAGE extends HorizontalKineticBlock implements IBE<CBE_Treadmill> {
+public class CB_Garbage extends HorizontalKineticBlock implements IBE<CBE_Garbage>, ICogWheel {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public CB_GARBAGE(Properties properties) {
+    public CB_Garbage(Properties properties) {
         super(properties);
     }
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
-    }
 
     @Override
-    public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        Direction.Axis facingAxis = state.getValue(HORIZONTAL_FACING).getAxis();
-        return face.getAxis() != facingAxis;
-    }
-
-    @Override
-    public boolean hideStressImpact() {
-        return true;
+    public Direction.Axis getRotationAxis(BlockState state) {
+        Direction facing = state.getValue(HORIZONTAL_FACING);
+        return facing.getAxis() == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
     }
 
     @Override
@@ -52,7 +47,7 @@ public class CB_GARBAGE extends HorizontalKineticBlock implements IBE<CBE_Treadm
                                                BlockHitResult hitResult) {
         if (player.isShiftKeyDown()) {
             // 潜行右键：释放当前宝可梦
-            withBlockEntityDo(level, pos, CBE_Treadmill::releasePokemon);
+            withBlockEntityDo(level, pos, CBE_Garbage::releasePokemon);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         if (!level.isClientSide) {
@@ -66,24 +61,32 @@ public class CB_GARBAGE extends HorizontalKineticBlock implements IBE<CBE_Treadm
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         // 先归还宝可梦，再让 super 清理方块实体与动力网络
         if (!level.isClientSide && state.hasBlockEntity() && state.getBlock() != newState.getBlock())
-            withBlockEntityDo(level, pos, CBE_Treadmill::releasePokemon);
+            withBlockEntityDo(level, pos, CBE_Garbage::releasePokemon);
         super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override
-    public Class<CBE_Treadmill> getBlockEntityClass() {
-        return CBE_Treadmill.class;
+    public Class<CBE_Garbage> getBlockEntityClass() {
+        return CBE_Garbage.class;
     }
 
     @Override
-    public BlockEntityType<? extends CBE_Treadmill> getBlockEntityType() {
-        return ModBlockEntity.CB_TREADMILL_ENTITY.get();
+    public BlockEntityType<? extends CBE_Garbage> getBlockEntityType() {
+        return ModBlockEntity.CBE_GARBAGE.get();
     }
 
     @Override
-    public Direction.Axis getRotationAxis(BlockState state) {
-        Direction facing = state.getValue(HORIZONTAL_FACING);
-        return facing.getAxis() == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
+    public boolean isLadder(BlockState state, LevelReader level, BlockPos pos, LivingEntity entity) {
+        return super.isLadder(state, level, pos, entity);
     }
 
+    @Override
+    public boolean isLargeCog() {
+        return ICogWheel.super.isLargeCog();
+    }
+
+    @Override
+    public boolean isSmallCog() {
+        return true;
+    }
 }

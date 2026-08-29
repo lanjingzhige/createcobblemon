@@ -2,6 +2,7 @@ package com.lanjingzhige.createcobblemon.network;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
 import com.lanjingzhige.createcobblemon.CreateCobblemonClient;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
 import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillPlacePokemonPacket;
@@ -39,6 +40,8 @@ public class TreadmillPackets {
                 if (player.distanceToSqr(Vec3.atCenterOf(payload.pos())) > 64 * 64)
                     return;
                 if (level.getBlockEntity(payload.pos()) instanceof CBE_Treadmill blockEntity)
+                    blockEntity.setPokemon(player, payload.pokemonUuid());
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_Garbage blockEntity)
                     blockEntity.setPokemon(player, payload.pokemonUuid());
             }
         });

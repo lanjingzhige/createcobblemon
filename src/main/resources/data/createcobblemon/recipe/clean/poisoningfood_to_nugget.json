@@ -1,0 +1,20 @@
+{
+  "type": "createcobblemon:clean",
+  "ingredients": [
+    {
+      "item": "cobblemon:exp_candy_xs"
+    }
+  ],
+  "results": [
+    {
+      "id": "create:experience_nugget",
+      "count": 1
+    },
+    {
+      "id": "cobblemon:exp_candy_xs",
+      "count": 1,
+      "chance": 0.01
+    }
+  ],
+  "processing_time": 200
+}

@@ -18,7 +18,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class CBE_CreatPokemonGenerator extends GeneratingKineticBlockEntity {

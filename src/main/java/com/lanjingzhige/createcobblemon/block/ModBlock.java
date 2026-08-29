@@ -1,12 +1,15 @@
 package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
+import com.lanjingzhige.createcobblemon.block.blocks.CB_Garbage;
 import com.lanjingzhige.createcobblemon.block.blocks.CB_Treadmill;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.data.SharedProperties;
+import com.simibubi.create.infrastructure.config.CStress;
 import com.tterrag.registrate.util.entry.BlockEntry;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import static com.simibubi.create.foundation.data.ModelGen.customItemModel;
 import static com.simibubi.create.foundation.data.TagGen.axeOrPickaxe;
@@ -24,7 +27,7 @@ public class ModBlock {
      */
     public static final BlockEntry<CB_Treadmill> CB_TREADMILL = REGISTRATE.block("cb_treadmill", CB_Treadmill::new)
         .initialProperties(SharedProperties::wooden)
-        .properties(p -> p.noOcclusion())
+        .properties(BlockBehaviour.Properties::noOcclusion)
         .transform(axeOrPickaxe())
         .onRegister(BlockStressValues.setGeneratorSpeed(8, true))
         .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 16))
@@ -33,12 +36,11 @@ public class ModBlock {
         .register();
 
 
-    public static final BlockEntry<CB_Treadmill> CB_GARBAGE = REGISTRATE.block("cb_garbage", CB_Treadmill::new)
+    public static final BlockEntry<CB_Garbage> CB_GARBAGE = REGISTRATE.block("cb_garbage", CB_Garbage::new)
             .initialProperties(SharedProperties::wooden)
-            .properties(p -> p.noOcclusion())
+            .properties(BlockBehaviour.Properties::noOcclusion)
             .transform(axeOrPickaxe())
-            .onRegister(BlockStressValues.setGeneratorSpeed(8, true))
-            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 16))
+            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 4.0))
             .item()
             .transform(customItemModel())
             .register();

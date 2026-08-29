@@ -3,11 +3,13 @@ package com.lanjingzhige.createcobblemon;
 import com.lanjingzhige.createcobblemon.block.ModBlock;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
 import com.lanjingzhige.createcobblemon.network.TreadmillPackets;
+import com.lanjingzhige.createcobblemon.recipe.ModRecipe;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
 import net.createmod.catnip.lang.FontHelper;
+import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -74,6 +76,7 @@ public class CreateCobblemon {
         REGISTRATE.registerEventListeners(modEventBus);
         ModBlock.register();
         ModBlockEntity.register();
+        ModRecipe.register(modEventBus);
 
 
     }
@@ -89,5 +92,9 @@ public class CreateCobblemon {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
 
+    }
+
+    public static ResourceLocation modLoc(String path){
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 }
