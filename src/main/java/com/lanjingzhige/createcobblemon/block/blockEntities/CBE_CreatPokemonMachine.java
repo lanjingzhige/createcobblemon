@@ -45,7 +45,7 @@ public class CBE_CreatPokemonMachine extends CBE_CreatPokemonBase {
         return Mth.clamp((int) Math.abs(getSpeed() / 16f), 1, 512);
     }
 
-    void process() {
+     void process() {
         RecipeWrapper inventoryIn = new RecipeWrapper(inputInv);
 
         if (lastRecipe == null || !lastRecipe.matches(inventoryIn, level)) {
@@ -64,7 +64,6 @@ public class CBE_CreatPokemonMachine extends CBE_CreatPokemonBase {
         if (!craftingRemainingItem.isEmpty()) {
             ItemHandlerHelper.insertItemStacked(outputInv, craftingRemainingItem, false);
         }
-        award(AllAdvancements.MILLSTONE);
 
         sendData();
         setChanged();

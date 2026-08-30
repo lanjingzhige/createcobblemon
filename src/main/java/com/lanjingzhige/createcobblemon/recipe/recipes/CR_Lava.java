@@ -6,10 +6,10 @@ import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
-public class CR_CoalFluid extends StandardProcessingRecipe<SingleRecipeInput> {
+public class CR_Lava extends StandardProcessingRecipe<SingleRecipeInput> {
 
-    public CR_CoalFluid(ProcessingRecipeParams params) {
-        super(ModRecipe.COAL_FLUID, params);
+    public CR_Lava(ProcessingRecipeParams params) {
+        super(ModRecipe.LAVA, params);
     }
 
     @Override

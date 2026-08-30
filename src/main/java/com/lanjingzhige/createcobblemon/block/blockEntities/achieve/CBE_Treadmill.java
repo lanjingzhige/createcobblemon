@@ -1,10 +1,11 @@
-package com.lanjingzhige.createcobblemon.block.blockEntities;
+package com.lanjingzhige.createcobblemon.block.blockEntities.achieve;
 
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.types.ElementalType;
 import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CreatPokemonGenerator;
 import com.lanjingzhige.createcobblemon.block.blocks.CB_Treadmill;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;

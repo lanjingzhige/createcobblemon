@@ -1,9 +1,9 @@
 package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CoalFluidMachine;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_CoalFluidMachine;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Garbage;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.block.renderer.CB_TreadmillRenderer;
 import com.lanjingzhige.createcobblemon.block.renderer.CR_CoalFluidMachine;
 import com.lanjingzhige.createcobblemon.block.renderer.CR_Garbage;

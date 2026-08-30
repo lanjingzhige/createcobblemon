@@ -1,6 +1,6 @@
 package com.lanjingzhige.createcobblemon.block.visual;
 
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Garbage;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;

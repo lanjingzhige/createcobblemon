@@ -63,18 +63,6 @@ public class CBE_CreatPokemonGenerator extends CBE_CreatPokemonBase {
         super.ensureClientPokemonEntity(null);
         // 注意：继承自父类的 pokemon 字段在客户端 read() 之后为 null（懒加载设计），
         // 直接访问字段会 NPE；必须通过 getPokemon() 按需从 NBT 加载。
-        Pokemon pokemon = getPokemon();
-        if (pokemon == null || clientPokemonEntity == null)
-            return;
-        for (ElementalType type : pokemon.getTypes()) {
-            if (type.showdownId().equals("flying")) {
-                level.setBlock(worldPosition,
-                        getBlockState().setValue(CB_Treadmill.FLY, true),
-                        3);
-                clientPokemonEntity.getEntityData().set(PokemonEntity.getPOSE_TYPE(), PoseType.FLY);
-            } else {
-                clientPokemonEntity.getEntityData().set(PokemonEntity.getPOSE_TYPE(), PoseType.WALK);
-            }
-        }
+
     }
 }

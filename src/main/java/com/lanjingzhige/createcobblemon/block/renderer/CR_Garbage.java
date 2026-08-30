@@ -2,7 +2,7 @@ package com.lanjingzhige.createcobblemon.block.renderer;
 
 import com.cobblemon.mod.common.client.entity.PokemonClientDelegate;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Garbage;
 import com.lanjingzhige.createcobblemon.block.blocks.CB_Garbage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;

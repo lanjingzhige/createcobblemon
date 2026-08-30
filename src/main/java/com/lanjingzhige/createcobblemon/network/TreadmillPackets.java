@@ -2,9 +2,9 @@ package com.lanjingzhige.createcobblemon.network;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
 import com.lanjingzhige.createcobblemon.CreateCobblemonClient;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CoalFluidMachine;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_CoalFluidMachine;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Garbage;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillPlacePokemonPacket;
 import net.minecraft.server.level.ServerLevel;

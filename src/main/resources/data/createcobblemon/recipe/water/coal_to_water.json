@@ -1,5 +1,5 @@
-﻿{
-  "type": "createcobblemon:coal_fluid",
+{
+  "type": "createcobblemon:water",
   "ingredients": [
     {
       "item": "minecraft:coal"
@@ -7,10 +7,9 @@
   ],
   "results": [
     {
-      "id": "minecraft:lava",
+      "id": "minecraft:water",
       "amount": 100
     }
   ],
   "processing_time": 100
 }
-

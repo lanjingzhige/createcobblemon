@@ -2,7 +2,7 @@ package com.lanjingzhige.createcobblemon.block.renderer;
 
 import com.cobblemon.mod.common.client.entity.PokemonClientDelegate;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Treadmill;
 import com.lanjingzhige.createcobblemon.block.blocks.CB_Treadmill;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;

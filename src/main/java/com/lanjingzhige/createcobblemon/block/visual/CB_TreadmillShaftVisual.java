@@ -1,6 +1,6 @@
 package com.lanjingzhige.createcobblemon.block.visual;
 
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Treadmill;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 

@@ -3,6 +3,7 @@ package com.lanjingzhige.createcobblemon.block.blockEntities;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.CobblemonEntities;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
+import com.cobblemon.mod.common.api.types.ElementalType;
 import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
@@ -79,7 +80,7 @@ public abstract class CBE_CreatPokemonBase extends GeneratingKineticBlockEntity 
 
         if (types != null) {
             boolean matches = pokemon.getPrimaryType().showdownId().equals(types);
-            com.cobblemon.mod.common.api.types.ElementalType secondary = pokemon.getSecondaryType();
+            ElementalType secondary = pokemon.getSecondaryType();
             if (!matches && secondary != null)
                 matches = secondary.showdownId().equals(types);
             if (!matches)

@@ -3,7 +3,7 @@ package com.lanjingzhige.createcobblemon.block.blocks;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CoalFluidMachine;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_CoalFluidMachine;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
@@ -18,7 +18,9 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -26,9 +28,17 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class CB_CoalFluidMachine extends HorizontalKineticBlock implements IBE<CBE_CoalFluidMachine>, ICogWheel {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty LAVA = BooleanProperty.create("lava");
 
     public CB_CoalFluidMachine(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(LAVA, false));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(LAVA);
     }
 
     @Override

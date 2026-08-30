@@ -1,8 +1,9 @@
-package com.lanjingzhige.createcobblemon.block.blockEntities;
+package com.lanjingzhige.createcobblemon.block.blockEntities.achieve;
 
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CreatPokemonMachine;
 import com.lanjingzhige.createcobblemon.recipe.ModRecipe;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +26,7 @@ import java.util.UUID;
 
 public class CBE_Garbage extends CBE_CreatPokemonMachine {
 
-    /** 閰嶆柟鏈寚瀹?processing_time 鏃朵娇鐢ㄧ殑榛樿鍔犲伐鏃堕暱 */
+
     public static final int DEFAULT_RECIPE_TIME = 100;
 
     public CR_Garbage lastRecipe;
@@ -114,7 +115,7 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
 
     }
 
-    @Override
+
     void process() {
         SingleRecipeInput inventoryIn = new SingleRecipeInput(inputInv.getStackInSlot(0));
 
@@ -134,7 +135,6 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
         if (!craftingRemainingItem.isEmpty()) {
             ItemHandlerHelper.insertItemStacked(outputInv, craftingRemainingItem, false);
         }
-        award(AllAdvancements.MILLSTONE);
 
         sendData();
         setChanged();
