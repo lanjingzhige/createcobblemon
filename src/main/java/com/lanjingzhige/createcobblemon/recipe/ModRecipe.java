@@ -1,6 +1,7 @@
 package com.lanjingzhige.createcobblemon.recipe;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
+import com.lanjingzhige.createcobblemon.recipe.recipes.CR_CoalFluid;
 import com.lanjingzhige.createcobblemon.recipe.recipes.CR_Garbage;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
@@ -20,7 +21,9 @@ import java.util.function.Supplier;
 
 public enum ModRecipe implements IRecipeTypeInfo {
 
-    CLEAN(CR_Garbage::new);
+    CLEAN(CR_Garbage::new),
+
+    COAL_FLUID(CR_CoalFluid::new);
 
     public final ResourceLocation id;
     public final Supplier<RecipeSerializer<?>> serializerSupplier;

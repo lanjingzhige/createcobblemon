@@ -4,12 +4,12 @@
   "item.createcobblemon.example_item": "Example Item",
   "block.createcobblemon.cb_treadmill": "Treadmill",
   "block.createcobblemon.cb_garbage": "Toxic Garbage Disposer",
-
   "createcobblemon.configuration.title": "CreateCobblemon Configs",
   "createcobblemon.configuration.section.createcobblemon.common.toml": "CreateCobblemon Configs",
   "createcobblemon.configuration.section.createcobblemon.common.toml.title": "CreateCobblemon Configs",
   "createcobblemon.configuration.items": "Item List",
   "createcobblemon.configuration.logDirtBlock": "Log Dirt Block",
   "createcobblemon.configuration.magicNumberIntroduction": "Magic Number Text",
-  "createcobblemon.configuration.magicNumber": "Magic Number"
+  "createcobblemon.configuration.magicNumber": "Magic Number",
+  "block.createcobblemon.cb_coal_fluid": "Coal Fluid Machine"
 }

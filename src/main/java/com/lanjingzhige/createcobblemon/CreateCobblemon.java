@@ -2,6 +2,7 @@ package com.lanjingzhige.createcobblemon;
 
 import com.lanjingzhige.createcobblemon.block.ModBlock;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CoalFluidMachine;
 import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
 import com.lanjingzhige.createcobblemon.network.TreadmillPackets;
 import com.lanjingzhige.createcobblemon.recipe.ModRecipe;
@@ -34,6 +35,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -80,6 +83,7 @@ public class CreateCobblemon {
         ModRecipe.register(modEventBus);
         modEventBus.addListener(CBE_Garbage::registerCapabilities);
 
+        modEventBus.addListener(CBE_CoalFluidMachine::registerCapabilities);
 
     }
 

@@ -1,6 +1,7 @@
 package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
+import com.lanjingzhige.createcobblemon.block.blocks.CB_CoalFluidMachine;
 import com.lanjingzhige.createcobblemon.block.blocks.CB_Garbage;
 import com.lanjingzhige.createcobblemon.block.blocks.CB_Treadmill;
 import com.simibubi.create.api.stress.BlockStressValues;
@@ -41,6 +42,15 @@ public class ModBlock {
             .properties(BlockBehaviour.Properties::noOcclusion)
             .transform(axeOrPickaxe())
             .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 4.0))
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_CoalFluidMachine> CB_COAL_FLUID = REGISTRATE.block("cb_coal_fluid", CB_CoalFluidMachine::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
+            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 8.0))
             .item()
             .transform(customItemModel())
             .register();

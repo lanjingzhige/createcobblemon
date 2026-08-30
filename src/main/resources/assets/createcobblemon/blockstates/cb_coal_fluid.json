@@ -1,0 +1,8 @@
+﻿{
+  "variants": {
+    "facing=north": { "model": "createcobblemon:block/cb_coal_fluid" },
+    "facing=east": { "model": "createcobblemon:block/cb_coal_fluid", "y": 90 },
+    "facing=south": { "model": "createcobblemon:block/cb_coal_fluid", "y": 180 },
+    "facing=west": { "model": "createcobblemon:block/cb_coal_fluid", "y": 270 }
+  }
+}
