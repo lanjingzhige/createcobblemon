@@ -1,8 +1,13 @@
 package com.lanjingzhige.createcobblemon.block.blockEntities;
 
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
+import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.lanjingzhige.createcobblemon.recipe.ModRecipe;
+import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import com.lanjingzhige.createcobblemon.recipe.recipes.CR_Garbage;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import net.minecraft.core.BlockPos;
@@ -16,20 +21,30 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class CBE_Garbage extends CBE_CreatPokemonMachine {
 
-    /** 配方未指定 processing_time 时使用的默认加工时长 */
+    /** 閰嶆柟鏈寚瀹?processing_time 鏃朵娇鐢ㄧ殑榛樿鍔犲伐鏃堕暱 */
     public static final int DEFAULT_RECIPE_TIME = 100;
 
     public CR_Garbage lastRecipe;
 
     public CBE_Garbage(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        inputInv = new ItemStackHandler(3);
+        inputInv = new ItemStackHandler(1);
         outputInv = new ItemStackHandler(9);
         capability = new CreatPokemonMachineInventoryHandler();
     }
+
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(
+            Capabilities.ItemHandler.BLOCK,
+            ModBlockEntity.CBE_GARBAGE.get(),
+            (be, context) -> be.capability
+        );
+    }
+
 
     @Override
     public int getProcessingSpeed() {
@@ -54,10 +69,15 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
             return;
         if (getPokemon() == null)
             return;
-        for (int i = 0; i < outputInv.getSlots(); i++)
-            if (outputInv.getStackInSlot(i)
-                    .getCount() == outputInv.getSlotLimit(i))
-                return;
+        boolean hasOutputSpace = false;
+        for (int i = 0; i < outputInv.getSlots(); i++) {
+            if (outputInv.getStackInSlot(i).getCount() < outputInv.getSlotLimit(i)) {
+                hasOutputSpace = true;
+                break;
+            }
+        }
+        if (!hasOutputSpace)
+            return;
 
         if (timer > 0) {
             timer -= getProcessingSpeed();
@@ -91,10 +111,7 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
         timer = getProcessingTime(lastRecipe);
         sendData();
 
-        if (level != null && level.isClientSide() && clientPokemonEntity != null) {
-            clientPokemonEntity.getDelegate().tick(clientPokemonEntity);
-            driveWalkAnimation();
-        }
+
     }
 
     @Override
@@ -134,4 +151,17 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
         return ModRecipe.CLEAN.find(inventoryIn, level)
                 .isPresent();
     }
+
+    @Override
+    protected void ensureClientPokemonEntity(PoseType pose) {
+        super.ensureClientPokemonEntity(PoseType.WALK);
+    }
+
+    @Override
+    public void setPokemon(ServerPlayer player, UUID uuid, String types) {
+        super.setPokemon(player, uuid, "poison");
+
+    }
+
+
 }

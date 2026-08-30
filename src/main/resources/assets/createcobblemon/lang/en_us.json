@@ -3,6 +3,7 @@
   "block.createcobblemon.example_block": "Example Block",
   "item.createcobblemon.example_item": "Example Item",
   "block.createcobblemon.cb_treadmill": "Treadmill",
+  "block.createcobblemon.cb_garbage": "Toxic Garbage Disposer",
 
   "createcobblemon.configuration.title": "CreateCobblemon Configs",
   "createcobblemon.configuration.section.createcobblemon.common.toml": "CreateCobblemon Configs",

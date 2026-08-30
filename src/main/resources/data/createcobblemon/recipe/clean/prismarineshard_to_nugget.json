@@ -2,7 +2,7 @@
   "type": "createcobblemon:clean",
   "ingredients": [
     {
-      "tag": "c:foods/food_poisoning"
+      "item": "minecraft:prismarine_shard"
     }
   ],
   "results": [

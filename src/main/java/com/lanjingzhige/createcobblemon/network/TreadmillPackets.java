@@ -42,7 +42,7 @@ public class TreadmillPackets {
                 if (level.getBlockEntity(payload.pos()) instanceof CBE_Treadmill blockEntity)
                     blockEntity.setPokemon(player, payload.pokemonUuid());
                 if (level.getBlockEntity(payload.pos()) instanceof CBE_Garbage blockEntity)
-                    blockEntity.setPokemon(player, payload.pokemonUuid());
+                    blockEntity.setPokemon(player, payload.pokemonUuid(),"poison");
             }
         });
     }

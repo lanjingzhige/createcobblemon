@@ -32,6 +32,7 @@ import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,13 +77,19 @@ public class CBE_CreatPokemonMachine extends KineticBlockEntity {
         return pokemon;
     }
 
-    public void setPokemon(ServerPlayer player, UUID uuid) {
+    public void setPokemon(ServerPlayer player, UUID uuid,String types) {
         if (level == null || level.isClientSide)
             return;
         PCStore pc = Cobblemon.INSTANCE.getStorage().getPC(player);
         Pokemon pokemon = pc.get(uuid);
         if (pokemon == null)
             return;
+
+        if (!pokemon.getPrimaryType().showdownId().equals(types) && !Objects.requireNonNull(pokemon.getSecondaryType()).showdownId().equals(types)){
+            return;
+        }
+
+
 
         // 替换：先把旧的还回它的电脑
         if (hasPokemon())
@@ -95,13 +102,6 @@ public class CBE_CreatPokemonMachine extends KineticBlockEntity {
         this.ownerUuid = player.getUUID();
         this.clientPokemonEntity = null;
         this.pokemon = pokemon;
-        for (ElementalType type : pokemon.getTypes()) {
-            if (type.showdownId().equals("flying")){
-                level.setBlock(worldPosition,
-                        getBlockState().setValue(CB_Treadmill.FLY, true),
-                        3);
-            }
-        }
 
         notifyChange();
     }
@@ -200,48 +200,6 @@ public class CBE_CreatPokemonMachine extends KineticBlockEntity {
     @Override
     public void tick() {
         super.tick();
-
-        if (getSpeed() == 0)
-            return;
-        if (getPokemon() == null)
-            return;
-        for (int i = 0; i < outputInv.getSlots(); i++)
-            if (outputInv.getStackInSlot(i)
-                    .getCount() == outputInv.getSlotLimit(i))
-                return;
-
-        if (timer > 0) {
-            timer -= getProcessingSpeed();
-
-            if (level.isClientSide) {
-                return;
-            }
-            if (timer <= 0)
-                process();
-            return;
-        }
-
-        if (inputInv.getStackInSlot(0)
-                .isEmpty())
-            return;
-
-        RecipeWrapper inventoryIn = new RecipeWrapper(inputInv);
-        if (lastRecipe == null || !lastRecipe.matches(inventoryIn, level)) {
-            Optional<RecipeHolder<MillingRecipe>> recipe = AllRecipeTypes.MILLING.find(inventoryIn, level);
-            if (!recipe.isPresent()) {
-                timer = 100;
-                sendData();
-            } else {
-                lastRecipe = recipe.get().value();
-                timer = lastRecipe.getProcessingDuration();
-                sendData();
-            }
-            return;
-        }
-
-        timer = lastRecipe.getProcessingDuration();
-        sendData();
-
         if (level != null && level.isClientSide() && clientPokemonEntity != null) {
             clientPokemonEntity.getDelegate().tick(clientPokemonEntity);
             driveWalkAnimation();

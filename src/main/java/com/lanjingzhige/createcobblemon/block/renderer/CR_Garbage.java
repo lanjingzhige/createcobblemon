@@ -3,13 +3,15 @@ package com.lanjingzhige.createcobblemon.block.renderer;
 import com.cobblemon.mod.common.client.entity.PokemonClientDelegate;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
-import com.lanjingzhige.createcobblemon.block.blocks.CB_Treadmill;
+import com.lanjingzhige.createcobblemon.block.blocks.CB_Garbage;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -35,7 +37,7 @@ public class CR_Garbage extends KineticBlockEntityRenderer<CBE_Garbage> {
         ((PokemonClientDelegate) entity.getDelegate()).updatePartialTicks(partialTick);
 
         // 让宝可梦面向方块 facing 方向
-        Direction facing = blockEntity.getBlockState().getValue(CB_Treadmill.FACING);
+        Direction facing = blockEntity.getBlockState().getValue(CB_Garbage.FACING);
         float yaw = facing.toYRot();
         entity.setYRot(yaw);
         entity.yBodyRot = yaw;
@@ -61,6 +63,13 @@ public class CR_Garbage extends KineticBlockEntityRenderer<CBE_Garbage> {
 
     @Override
     protected BlockState getRenderedBlockState(CBE_Garbage be) {
-        return shaft(getRotationAxisOf(be));
+        return be.getBlockState();
+    }
+
+    @Override
+    protected SuperByteBuffer getRotatedModel(CBE_Garbage be, BlockState state) {
+        return CachedBuffers.partialFacingVertical(
+            AllPartialModels.SHAFTLESS_COGWHEEL, state,
+            Direction.fromAxisAndDirection(getRotationAxisOf(be), Direction.AxisDirection.POSITIVE));
     }
 }

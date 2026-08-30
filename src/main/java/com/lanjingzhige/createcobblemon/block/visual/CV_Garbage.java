@@ -1,7 +1,6 @@
 package com.lanjingzhige.createcobblemon.block.visual;
 
 import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Garbage;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_Treadmill;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
@@ -14,7 +13,7 @@ import net.minecraft.world.level.LightLayer;
 public class CV_Garbage extends SingleAxisRotatingVisual<CBE_Garbage> {
 
     public CV_Garbage(VisualizationContext context, CBE_Garbage blockEntity, float partialTick) {
-        super(context, blockEntity, partialTick, Models.partial(AllPartialModels.SHAFT));
+        super(context, blockEntity, partialTick, Models.partial(AllPartialModels.SHAFTLESS_COGWHEEL));
     }
 
     @Override

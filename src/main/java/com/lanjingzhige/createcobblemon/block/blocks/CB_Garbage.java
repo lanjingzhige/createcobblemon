@@ -43,6 +43,12 @@ public class CB_Garbage extends HorizontalKineticBlock implements IBE<CBE_Garbag
     }
 
     @Override
+    public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
+        return face.getAxis() != state.getValue(HORIZONTAL_FACING).getAxis();
+    }
+
+
+    @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hitResult) {
         if (player.isShiftKeyDown()) {
