@@ -34,7 +34,7 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
     public CBE_Garbage(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         inputInv = new ItemStackHandler(1);
-        outputInv = new ItemStackHandler(9);
+        outputInv = new ItemStackHandler(3);
         capability = new CreatPokemonMachineInventoryHandler();
     }
 

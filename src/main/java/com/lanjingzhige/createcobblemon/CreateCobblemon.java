@@ -2,8 +2,11 @@ package com.lanjingzhige.createcobblemon;
 
 import com.lanjingzhige.createcobblemon.block.ModBlock;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
+import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CreatPokemonMachine;
 import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_CoalFluidMachine;
 import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Garbage;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Ice;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Mulch;
 import com.lanjingzhige.createcobblemon.network.TreadmillPackets;
 import com.lanjingzhige.createcobblemon.recipe.ModRecipe;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -63,9 +66,14 @@ public class CreateCobblemon {
         ModBlock.register();
         ModBlockEntity.register();
         ModRecipe.register(modEventBus);
-        modEventBus.addListener(CBE_Garbage::registerCapabilities);
 
+
+
+
+        modEventBus.addListener(CBE_Garbage::registerCapabilities);
         modEventBus.addListener(CBE_CoalFluidMachine::registerCapabilities);
+        modEventBus.addListener(CBE_Mulch::registerCapabilities);
+        modEventBus.addListener(CBE_Ice::registerCapabilities);
 
     }
 

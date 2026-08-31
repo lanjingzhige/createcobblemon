@@ -1,5 +1,6 @@
 package com.lanjingzhige.createcobblemon.block.blockEntities;
 
+import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
 import com.simibubi.create.content.kinetics.millstone.MillingRecipe;
@@ -14,6 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -138,4 +141,6 @@ public class CBE_CreatPokemonMachine extends CBE_CreatPokemonBase {
             return super.extractItem(slot, amount, simulate);
         }
     }
+
+
 }

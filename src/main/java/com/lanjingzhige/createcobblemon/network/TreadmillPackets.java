@@ -2,9 +2,7 @@ package com.lanjingzhige.createcobblemon.network;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
 import com.lanjingzhige.createcobblemon.CreateCobblemonClient;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_CoalFluidMachine;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Garbage;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Treadmill;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.*;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillPlacePokemonPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -46,6 +44,10 @@ public class TreadmillPackets {
                     blockEntity.setPokemon(player, payload.pokemonUuid(),"poison");
                 if (level.getBlockEntity(payload.pos()) instanceof CBE_CoalFluidMachine blockEntity)
                     blockEntity.setPokemon(player, payload.pokemonUuid());
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_Mulch blockEntity)
+                    blockEntity.setPokemon(player, payload.pokemonUuid(),"poison");
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_Ice blockEntity)
+                    blockEntity.setPokemon(player, payload.pokemonUuid(),"ice");
             }
         });
     }

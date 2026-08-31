@@ -28,7 +28,7 @@ public class CR_Garbage extends StandardProcessingRecipe<SingleRecipeInput> impl
 
     @Override
     protected int getMaxOutputCount() {
-        return 4;
+        return 3;
     }
 
     // 本机使用配方的 processing_time 作为加工时长，必须允许配方指定时长，

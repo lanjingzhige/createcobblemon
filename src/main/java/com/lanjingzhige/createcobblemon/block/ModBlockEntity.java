@@ -1,12 +1,8 @@
 package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_CoalFluidMachine;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Garbage;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Treadmill;
-import com.lanjingzhige.createcobblemon.block.renderer.CB_TreadmillRenderer;
-import com.lanjingzhige.createcobblemon.block.renderer.CR_CoalFluidMachine;
-import com.lanjingzhige.createcobblemon.block.renderer.CR_Garbage;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.*;
+import com.lanjingzhige.createcobblemon.block.renderer.*;
 import com.lanjingzhige.createcobblemon.block.visual.CB_TreadmillShaftVisual;
 import com.lanjingzhige.createcobblemon.block.visual.CV_Garbage;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -40,6 +36,18 @@ public class ModBlockEntity {
             REGISTRATE.blockEntity("cbe_coal_fluid", CBE_CoalFluidMachine::new)
                     .validBlocks(ModBlock.CB_COAL_FLUID)
                     .renderer(() -> CR_CoalFluidMachine::new)
+                    .register();
+
+    public static final BlockEntityEntry<CBE_Mulch> CBE_MULCH =
+            REGISTRATE.blockEntity("cbe_mulch", CBE_Mulch::new)
+                    .validBlocks(ModBlock.CB_MULCH)
+                    .renderer(() -> CR_Mulch::new)
+                    .register();
+
+    public static final BlockEntityEntry<CBE_Ice> CBE_ICE =
+            REGISTRATE.blockEntity("cbe_ice", CBE_Ice::new)
+                    .validBlocks(ModBlock.CB_ICE)
+                    .renderer(() -> CR_Ice::new)
                     .register();
 
     public static void register() {

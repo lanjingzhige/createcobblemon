@@ -20,9 +20,12 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.Objects;
@@ -44,7 +47,6 @@ public class CBE_CoalFluidMachine extends CBE_CreatPokemonFluidMachine {
 
     public CBE_CoalFluidMachine(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        inputInv = new ItemStackHandler(1);
         outputInv = new ItemStackHandler(1);
         capability = new CreatPokemonMachineInventoryHandler();
     }
@@ -96,102 +98,32 @@ public class CBE_CoalFluidMachine extends CBE_CreatPokemonFluidMachine {
             timer -= getProcessingSpeed();
             if (timer <= 0)
                 process();
+
             return;
         }
 
-        if (inputInv.getStackInSlot(0).isEmpty())
-            return;
-
-        SingleRecipeInput inventoryIn = new SingleRecipeInput(inputInv.getStackInSlot(0));
-        if (lava){
-            if (lastRecipelava == null || !lastRecipelava.matches(inventoryIn, level)) {
-
-                Optional<RecipeHolder<CR_Lava>> recipe = ModRecipe.LAVA.find(inventoryIn, level);
-
-                if (recipe.isEmpty()) {
-                    timer = DEFAULT_RECIPE_TIME;
-                    sendData();
-                } else {
-                    lastRecipelava = recipe.get().value();
-                    timer = getProcessingTimelava(lastRecipelava);
-                    sendData();
-                }
-                return;
-            }
-
-            timer = getProcessingTimelava(lastRecipelava);
-            sendData();
-        }else {
-            if (lastRecipewater == null || !lastRecipewater.matches(inventoryIn, level)) {
-
-                Optional<RecipeHolder<CR_Water>> recipe = ModRecipe.WATER.find(inventoryIn, level);
-
-                if (recipe.isEmpty()) {
-                    timer = DEFAULT_RECIPE_TIME;
-                    sendData();
-                } else {
-                    lastRecipewater = recipe.get().value();
-                    timer = getProcessingTimewater(lastRecipewater);
-                    sendData();
-                }
-                return;
-            }
-            timer = getProcessingTimewater(lastRecipewater);
-            sendData();
-        }
-
-
-
+        timer = DEFAULT_RECIPE_TIME;
+        sendData();
     }
 
 
     void process() {
-        SingleRecipeInput inventoryIn = new SingleRecipeInput(inputInv.getStackInSlot(0));
+
+        // 生产水
+        FluidStack fluidStack;
+
         if (lava){
-            if (lastRecipelava == null || !lastRecipelava.matches(inventoryIn, level)) {
-                Optional<RecipeHolder<CR_Lava>> recipe= ModRecipe.LAVA.find(inventoryIn, level);
-
-                if (recipe.isEmpty())
-                    return;
-                lastRecipelava = recipe.get().value();
-            }
-
-            // 先确认所有流体产物都能放入，避免消耗煤炭后因槽满损失产物
-            for (FluidStack fluid : lastRecipelava.getFluidResults()) {
-                if (fillTankAmount(fluid, true) != fluid.getAmount())
-                    return;
-            }
-
-            ItemStack stackInSlot = inputInv.getStackInSlot(0);
-            stackInSlot.shrink(1);
-            inputInv.setStackInSlot(0, stackInSlot);
-
-            for (FluidStack fluid : lastRecipelava.getFluidResults())
-                fillTank(fluid, false);
+            fluidStack = new FluidStack(Fluids.LAVA,100);
         }else {
-            if (lastRecipewater == null || !lastRecipewater.matches(inventoryIn, level)) {
-                Optional<RecipeHolder<CR_Water>> recipe= ModRecipe.WATER.find(inventoryIn, level);
-
-                if (recipe.isEmpty())
-                    return;
-                lastRecipewater = recipe.get().value();
-            }
-
-            // 先确认所有流体产物都能放入，避免消耗煤炭后因槽满损失产物
-            for (FluidStack fluid : lastRecipewater.getFluidResults()) {
-                if (fillTankAmount(fluid, true) != fluid.getAmount())
-                    return;
-            }
-
-            ItemStack stackInSlot = inputInv.getStackInSlot(0);
-            stackInSlot.shrink(1);
-            inputInv.setStackInSlot(0, stackInSlot);
-
-            for (FluidStack fluid : lastRecipewater.getFluidResults())
-                fillTank(fluid, false);
+            fluidStack = new FluidStack(Fluids.WATER,100);
         }
 
 
+        // 将水填充到流体槽
+        fluidTank.getPrimaryHandler().fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+
+
+        timer = DEFAULT_RECIPE_TIME;
         sendData();
         setChanged();
     }
@@ -272,11 +204,6 @@ public class CBE_CoalFluidMachine extends CBE_CreatPokemonFluidMachine {
 
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                ModBlockEntity.CBE_COAL_FLUID.get(),
-                (be, context) -> be.capability
-        );
         event.registerBlockEntity(
                 Capabilities.FluidHandler.BLOCK,
                 ModBlockEntity.CBE_COAL_FLUID.get(),

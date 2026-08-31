@@ -1,9 +1,7 @@
 package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
-import com.lanjingzhige.createcobblemon.block.blocks.CB_CoalFluidMachine;
-import com.lanjingzhige.createcobblemon.block.blocks.CB_Garbage;
-import com.lanjingzhige.createcobblemon.block.blocks.CB_Treadmill;
+import com.lanjingzhige.createcobblemon.block.blocks.*;
 import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -47,6 +45,24 @@ public class ModBlock {
             .register();
 
     public static final BlockEntry<CB_CoalFluidMachine> CB_COAL_FLUID = REGISTRATE.block("cb_coal_fluid", CB_CoalFluidMachine::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
+            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 8.0))
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_Mulch> CB_MULCH = REGISTRATE.block("cb_mulch", CB_Mulch::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
+            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 8.0))
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_Ice> CB_ICE = REGISTRATE.block("cb_ice", CB_Ice::new)
             .initialProperties(SharedProperties::wooden)
             .properties(BlockBehaviour.Properties::noOcclusion)
             .transform(axeOrPickaxe())
