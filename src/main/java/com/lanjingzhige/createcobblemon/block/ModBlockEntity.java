@@ -2,6 +2,8 @@ package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
 import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.*;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_FairyTeleporter;
+import com.lanjingzhige.createcobblemon.block.renderer.CR_FairyTeleporter;
 import com.lanjingzhige.createcobblemon.block.renderer.*;
 import com.lanjingzhige.createcobblemon.block.visual.CB_TreadmillShaftVisual;
 import com.lanjingzhige.createcobblemon.block.visual.CV_Garbage;
@@ -49,6 +51,31 @@ public class ModBlockEntity {
                     .validBlocks(ModBlock.CB_ICE)
                     .renderer(() -> CR_Ice::new)
                     .register();
+
+    public static final BlockEntityEntry<CBE_FairyTeleporter> CBE_SHULKER_TELEPORTER =
+            REGISTRATE.blockEntity("shulker_teleporter", CBE_FairyTeleporter::new)
+                    .validBlocks(ModBlock.SHULKER_TELEPORTER)
+                    .renderer(() -> CR_FairyTeleporter::new)
+                    .register();
+
+    public static final BlockEntityEntry<CBE_Ground> CBE_GROUND =
+            REGISTRATE.blockEntity("cbe_ground", CBE_Ground::new)
+                    .validBlocks(ModBlock.CB_GROUND)
+                    .renderer(() -> CR_Ground::new)
+                    .register();
+
+    public static final BlockEntityEntry<CBE_Rock> CBE_ROCK =
+            REGISTRATE.blockEntity("cbe_rock", CBE_Rock::new)
+                    .validBlocks(ModBlock.CB_ROCK)
+                    .renderer(() -> CR_Rock::new)
+                    .register();
+
+    public static final BlockEntityEntry<CBE_Steel> CBE_STEEL =
+            REGISTRATE.blockEntity("cbe_steel", CBE_Steel::new)
+                    .validBlocks(ModBlock.CB_STEEL)
+                    .renderer(() -> CR_Steel::new)
+                    .register();
+
 
     public static void register() {
         // 静态字段在类加载时完成注册

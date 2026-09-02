@@ -6,9 +6,9 @@ import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
-public class CR_Lava extends StandardProcessingRecipe<SingleRecipeInput> {
+public class CRE_Lava extends StandardProcessingRecipe<SingleRecipeInput> {
 
-    public CR_Lava(ProcessingRecipeParams params) {
+    public CRE_Lava(ProcessingRecipeParams params) {
         super(ModRecipe.LAVA, params);
     }
 

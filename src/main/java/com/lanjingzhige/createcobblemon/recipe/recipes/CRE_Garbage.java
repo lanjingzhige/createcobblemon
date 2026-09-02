@@ -5,7 +5,6 @@ import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemb
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
-import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
@@ -16,8 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class CR_Garbage extends StandardProcessingRecipe<SingleRecipeInput> implements IAssemblyRecipe {
-    public CR_Garbage(ProcessingRecipeParams params) {
+public class CRE_Garbage extends StandardProcessingRecipe<SingleRecipeInput> implements IAssemblyRecipe {
+    public CRE_Garbage(ProcessingRecipeParams params) {
         super(ModRecipe.CLEAN, params);
     }
 

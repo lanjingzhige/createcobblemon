@@ -2,13 +2,11 @@ package com.lanjingzhige.createcobblemon;
 
 import com.lanjingzhige.createcobblemon.block.ModBlock;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
-import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CreatPokemonMachine;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_CoalFluidMachine;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Garbage;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Ice;
-import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_Mulch;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.*;
+import com.lanjingzhige.createcobblemon.api.CBMultiBlockLifecycle;
 import com.lanjingzhige.createcobblemon.network.TreadmillPackets;
 import com.lanjingzhige.createcobblemon.recipe.ModRecipe;
+import com.lanjingzhige.createcobblemon.gui.ModMenuTypes;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
@@ -37,9 +35,8 @@ public class CreateCobblemon {
     public static final CreateRegistrate REGISTRATE = CreateRegistrate.create(MODID);
 
     static {
-        //默认创造标签栏(你个大聪明。记得改！！！)
         REGISTRATE.defaultCreativeTab(CreativeModeTabs.BUILDING_BLOCKS);
-        //物品 Tooltip 修饰器
+
         REGISTRATE.setTooltipModifierFactory(item -> new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE)
                 .andThen(TooltipModifier.mapNull(KineticStats.create(item))));
 
@@ -52,7 +49,6 @@ public class CreateCobblemon {
     public CreateCobblemon(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
 
-        // 网络包（跑步机界面）
         modEventBus.addListener(TreadmillPackets::register);
 
 
@@ -66,6 +62,7 @@ public class CreateCobblemon {
         ModBlock.register();
         ModBlockEntity.register();
         ModRecipe.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
 
 
 
@@ -74,10 +71,14 @@ public class CreateCobblemon {
         modEventBus.addListener(CBE_CoalFluidMachine::registerCapabilities);
         modEventBus.addListener(CBE_Mulch::registerCapabilities);
         modEventBus.addListener(CBE_Ice::registerCapabilities);
+        modEventBus.addListener(CBE_Ground::registerCapabilities);
+        modEventBus.addListener(CBE_Rock::registerCapabilities);
+        modEventBus.addListener(CBE_Steel::registerCapabilities);
 
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> CBMultiBlockLifecycle.registerMovementChecks());
 
     }
 

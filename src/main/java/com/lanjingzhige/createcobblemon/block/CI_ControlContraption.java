@@ -6,7 +6,7 @@ import net.createmod.catnip.lang.Lang;
 
 public interface CI_ControlContraption {
 
-    static enum MovementIceMode implements INamedIconOptions {
+    enum MovementIceMode implements INamedIconOptions {
 
         MOVE_ICE(AllIcons.I_MOVE_PLACE),
         MOVE_PACKED_ICE(AllIcons.I_MOVE_PLACE_RETURNED),
@@ -19,6 +19,88 @@ public interface CI_ControlContraption {
         private MovementIceMode(AllIcons icon) {
             this.icon = icon;
             translationKey = "create.contraptions.movement_ice_mode." + Lang.asId(name());
+        }
+
+        @Override
+        public AllIcons getIcon() {
+            return icon;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return translationKey;
+        }
+
+    }
+    enum MovementGroundMode implements INamedIconOptions {
+
+        MOVE_DIRT(AllIcons.I_MOVE_PLACE),
+        MOVE_SAND(AllIcons.I_MOVE_PLACE_RETURNED),
+        MOVE_CLAY(AllIcons.I_MOVE_NEVER_PLACE),
+        ;
+
+        private String translationKey;
+        private AllIcons icon;
+
+        private MovementGroundMode(AllIcons icon) {
+            this.icon = icon;
+            translationKey = "create.contraptions.movement_ground_mode." + Lang.asId(name());
+        }
+
+        @Override
+        public AllIcons getIcon() {
+            return icon;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return translationKey;
+        }
+
+    }
+    enum MovementRockMode implements INamedIconOptions {
+
+        MOVE_COBBLESTONE(AllIcons.I_MOVE_PLACE),
+        MOVE_SMOOTH_STONE(AllIcons.I_MOVE_PLACE_RETURNED),
+        MOVE_COBBLED_DEEPSLATE(AllIcons.I_MOVE_NEVER_PLACE),
+        MOVE_POLISHED_DEEPSLATE(AllIcons.I_MOVE_PLACE),
+        MOVE_ANDESITE(AllIcons.I_MOVE_PLACE_RETURNED),
+        ;
+
+        private String translationKey;
+        private AllIcons icon;
+
+        private MovementRockMode(AllIcons icon) {
+            this.icon = icon;
+            translationKey = "create.contraptions.movement_rock_mode." + Lang.asId(name());
+        }
+
+        @Override
+        public AllIcons getIcon() {
+            return icon;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return translationKey;
+        }
+
+    }
+
+    enum MovementSteelMode implements INamedIconOptions {
+
+        MOVE_DEEPSLATE_COPPER_ORE(AllIcons.I_MOVE_PLACE),
+        MOVE_DEEPSLATE_IRON_ORE(AllIcons.I_MOVE_PLACE_RETURNED),
+        MOVE_DEEPSLATE_GOLD_ORE(AllIcons.I_MOVE_NEVER_PLACE),
+        MOVE_DEEPSLATE_ZINC_ORE(AllIcons.I_MOVE_PLACE),
+        ;
+
+        private String translationKey;
+        private AllIcons icon;
+
+        private MovementSteelMode(AllIcons icon) {
+            this.icon = icon;
+            translationKey = "create.contraptions.movement_steel_mode." + Lang.asId(name());
         }
 
         @Override

@@ -6,9 +6,9 @@ import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
-public class CR_Water extends StandardProcessingRecipe<SingleRecipeInput> {
+public class CRE_Water extends StandardProcessingRecipe<SingleRecipeInput> {
 
-    public CR_Water(ProcessingRecipeParams params) {
+    public CRE_Water(ProcessingRecipeParams params) {
         super(ModRecipe.WATER, params);
     }
 

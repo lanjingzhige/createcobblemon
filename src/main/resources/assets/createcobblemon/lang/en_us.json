@@ -11,5 +11,13 @@
   "createcobblemon.configuration.logDirtBlock": "Log Dirt Block",
   "createcobblemon.configuration.magicNumberIntroduction": "Magic Number Text",
   "createcobblemon.configuration.magicNumber": "Magic Number",
-  "block.createcobblemon.cb_coal_fluid": "Coal Fluid Machine"
+  "block.createcobblemon.cb_coal_fluid": "Coal Fluid Machine",
+  "block.createcobblemon.shulker_teleporter": "Shulker Teleporter",
+  "createcobblemon.shulker_teleporter.search": "Search",
+  "createcobblemon.shulker_teleporter.own_address": "Own Address",
+  "createcobblemon.shulker_teleporter.target_address": "Target Address",
+  "createcobblemon.shulker_teleporter.new_address": "New Address",
+  "createcobblemon.shulker_teleporter.no_addresses": "No addresses found",
+  "createcobblemon.shulker_teleporter.own_address.tooltip": "Name this teleporter so others can target it.",
+  "createcobblemon.shulker_teleporter.select_target": "Select as target"
 }

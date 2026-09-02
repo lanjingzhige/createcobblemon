@@ -31,6 +31,46 @@ public class Config {
             .comment("A list of items to log on common setup.")
             .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
 
+    public static final ModConfigSpec.BooleanValue ENABLE_SHULKER_TELEPORTER_CAMERA_OFFSET = BUILDER
+            .comment("Apply the Shulker Teleporter first-person camera offset.")
+            .define("enableShulkerTeleporterCameraOffset", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_SHULKER_TELEPORTER_PLAYER_CLIPPING = BUILDER
+            .comment("Clip players/mobs inside a closing Shulker Teleporter shell.")
+            .define("enableShulkerTeleporterPlayerClipping", true);
+
+    public static final ShulkerTeleporter SHULKER_TELEPORTER = new ShulkerTeleporter(BUILDER);
+
+    public static class ShulkerTeleporter {
+        public final ModConfigSpec.BooleanValue allowCrossDimension;
+        public final ModConfigSpec.BooleanValue allowDestinationChunkLoading;
+        public final ModConfigSpec.DoubleValue maxSameSpaceDistance;
+        public final ModConfigSpec.BooleanValue allowPlayers;
+        public final ModConfigSpec.BooleanValue allowMobs;
+        public final ModConfigSpec.BooleanValue allowItems;
+        public final ModConfigSpec.IntValue maxEntitiesPerTeleport;
+        public final ModConfigSpec.IntValue arrivalCooldownTicks;
+
+        ShulkerTeleporter(ModConfigSpec.Builder builder) {
+            builder.push("shulkerTeleporter");
+            allowCrossDimension = builder.define("allowCrossDimension", true);
+            allowDestinationChunkLoading = builder
+                    .comment("Allow static-world destinations to load their chunk while resolving a teleport.")
+                    .define("allowDestinationChunkLoading", true);
+            maxSameSpaceDistance = builder
+                    .comment("Maximum destination distance within the same dimension and sublevel. 0 means unlimited.")
+                    .defineInRange("maxSameSpaceDistance", 0.0d, 0.0d, 30000000.0d);
+            allowPlayers = builder.define("allowPlayers", true);
+            allowMobs = builder.define("allowMobs", true);
+            allowItems = builder.define("allowItems", true);
+            maxEntitiesPerTeleport = builder
+                    .comment("Maximum entities moved in one activation. 0 means unlimited.")
+                    .defineInRange("maxEntitiesPerTeleport", 0, 0, 1024);
+            arrivalCooldownTicks = builder.defineInRange("arrivalCooldownTicks", 80, 0, Integer.MAX_VALUE);
+            builder.pop();
+        }
+    }
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     private static boolean validateItemName(final Object obj) {

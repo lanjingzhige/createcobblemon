@@ -3,6 +3,7 @@ package com.lanjingzhige.createcobblemon.network;
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
 import com.lanjingzhige.createcobblemon.CreateCobblemonClient;
 import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.*;
+import com.lanjingzhige.createcobblemon.network.packet.FairyTeleporterConfigPacket;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillPlacePokemonPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -28,6 +29,12 @@ public class TreadmillPackets {
                 TreadmillPlacePokemonPacket.TYPE,
                 TreadmillPlacePokemonPacket.STREAM_CODEC,
             TreadmillPackets::handlePlacePokemon);
+
+        registrar.playToServer(
+                FairyTeleporterConfigPacket.TYPE,
+                FairyTeleporterConfigPacket.STREAM_CODEC,
+                FairyTeleporterConfigPacket::handle
+        );
     }
 
     private static void handlePlacePokemon(TreadmillPlacePokemonPacket payload, IPayloadContext context) {
@@ -48,6 +55,15 @@ public class TreadmillPackets {
                     blockEntity.setPokemon(player, payload.pokemonUuid(),"poison");
                 if (level.getBlockEntity(payload.pos()) instanceof CBE_Ice blockEntity)
                     blockEntity.setPokemon(player, payload.pokemonUuid(),"ice");
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_FairyTeleporter blockEntity)
+                    blockEntity.setPokemon(player, payload.pokemonUuid(),"psychic");
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_Ground blockEntity)
+                    blockEntity.setPokemon(player, payload.pokemonUuid(),"ground");
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_Rock blockEntity)
+                    blockEntity.setPokemon(player, payload.pokemonUuid(),"rock");
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_Steel blockEntity)
+                    blockEntity.setPokemon(player, payload.pokemonUuid(),"steel");
+
             }
         });
     }

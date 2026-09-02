@@ -1,9 +1,9 @@
 package com.lanjingzhige.createcobblemon.recipe;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
-import com.lanjingzhige.createcobblemon.recipe.recipes.CR_Lava;
-import com.lanjingzhige.createcobblemon.recipe.recipes.CR_Garbage;
-import com.lanjingzhige.createcobblemon.recipe.recipes.CR_Water;
+import com.lanjingzhige.createcobblemon.recipe.recipes.CRE_Lava;
+import com.lanjingzhige.createcobblemon.recipe.recipes.CRE_Garbage;
+import com.lanjingzhige.createcobblemon.recipe.recipes.CRE_Water;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,10 +22,9 @@ import java.util.function.Supplier;
 
 public enum ModRecipe implements IRecipeTypeInfo {
 
-    CLEAN(CR_Garbage::new),
-
-    LAVA(CR_Lava::new),
-    WATER(CR_Water::new);
+    CLEAN(CRE_Garbage::new),
+    LAVA(CRE_Lava::new),
+    WATER(CRE_Water::new);
 
     public final ResourceLocation id;
     public final Supplier<RecipeSerializer<?>> serializerSupplier;

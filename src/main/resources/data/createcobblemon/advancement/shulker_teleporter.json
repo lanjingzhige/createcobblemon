@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:root",
+  "criteria": {
+    "grant": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "color": "#DBA213",
+      "translate": "advancement.createcobblemon.shulker_teleporter.desc"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "createcobblemon:shulker_teleporter"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.createcobblemon.shulker_teleporter"
+    },
+    "x": 4,
+    "y": 16
+  },
+  "requirements": [
+    [
+      "grant"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

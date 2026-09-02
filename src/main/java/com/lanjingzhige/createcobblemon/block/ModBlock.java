@@ -2,11 +2,10 @@ package com.lanjingzhige.createcobblemon.block;
 
 import com.lanjingzhige.createcobblemon.CreateCobblemon;
 import com.lanjingzhige.createcobblemon.block.blocks.*;
+import com.lanjingzhige.createcobblemon.block.blocks.CB_FairyTeleporter;
 import com.simibubi.create.api.stress.BlockStressValues;
-import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.data.SharedProperties;
-import com.simibubi.create.infrastructure.config.CStress;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
@@ -67,6 +66,38 @@ public class ModBlock {
             .properties(BlockBehaviour.Properties::noOcclusion)
             .transform(axeOrPickaxe())
             .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 8.0))
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_FairyTeleporter> SHULKER_TELEPORTER = REGISTRATE.block("shulker_teleporter", CB_FairyTeleporter::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_Ground> CB_GROUND = REGISTRATE.block("cb_ground", CB_Ground::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_Rock> CB_ROCK = REGISTRATE.block("cb_rock", CB_Rock::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_Steel> CB_STEEL = REGISTRATE.block("cb_steel", CB_Steel::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
             .item()
             .transform(customItemModel())
             .register();

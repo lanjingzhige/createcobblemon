@@ -9,8 +9,8 @@ import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
 import com.lanjingzhige.createcobblemon.block.blockEntities.CBE_CreatPokemonFluidMachine;
 import com.lanjingzhige.createcobblemon.block.blocks.CB_CoalFluidMachine;
 import com.lanjingzhige.createcobblemon.recipe.ModRecipe;
-import com.lanjingzhige.createcobblemon.recipe.recipes.CR_Lava;
-import com.lanjingzhige.createcobblemon.recipe.recipes.CR_Water;
+import com.lanjingzhige.createcobblemon.recipe.recipes.CRE_Lava;
+import com.lanjingzhige.createcobblemon.recipe.recipes.CRE_Water;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -42,11 +41,12 @@ public class CBE_CoalFluidMachine extends CBE_CreatPokemonFluidMachine {
     public static final int TANK_CAPACITY = 2000;
     public static boolean lava = false;
 
-    public CR_Lava lastRecipelava;
-    public CR_Water lastRecipewater;
+    public CRE_Lava lastRecipelava;
+    public CRE_Water lastRecipewater;
 
     public CBE_CoalFluidMachine(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        inputInv = new ItemStackHandler(0);
         outputInv = new ItemStackHandler(1);
         capability = new CreatPokemonMachineInventoryHandler();
     }
@@ -66,11 +66,11 @@ public class CBE_CoalFluidMachine extends CBE_CreatPokemonFluidMachine {
         return Mth.clamp((int) Math.abs(getSpeed() / 16f + attack / 16f), 1, 512);
     }
 
-    private int getProcessingTimelava(CR_Lava recipe) {
+    private int getProcessingTimelava(CRE_Lava recipe) {
         int duration = recipe.getProcessingDuration();
         return duration > 0 ? duration : DEFAULT_RECIPE_TIME;
     }
-    private int getProcessingTimewater(CR_Water recipe) {
+    private int getProcessingTimewater(CRE_Water recipe) {
         int duration = recipe.getProcessingDuration();
         return duration > 0 ? duration : DEFAULT_RECIPE_TIME;
     }
@@ -138,12 +138,12 @@ public class CBE_CoalFluidMachine extends CBE_CreatPokemonFluidMachine {
         if (lava){
             if (lastRecipelava != null && lastRecipelava.matches(inventoryIn, level))
                 return true;
-            Optional<RecipeHolder<CR_Lava>> recipe= ModRecipe.LAVA.find(inventoryIn, level);
+            Optional<RecipeHolder<CRE_Lava>> recipe= ModRecipe.LAVA.find(inventoryIn, level);
             return recipe.isPresent();
         }else {
             if (lastRecipewater != null && lastRecipewater.matches(inventoryIn, level))
                 return true;
-            Optional<RecipeHolder<CR_Water>> recipe= ModRecipe.WATER.find(inventoryIn, level);
+            Optional<RecipeHolder<CRE_Water>> recipe= ModRecipe.WATER.find(inventoryIn, level);
             return recipe.isPresent();
         }
 

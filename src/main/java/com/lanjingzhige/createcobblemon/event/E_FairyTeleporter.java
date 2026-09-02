@@ -1,0 +1,369 @@
+package com.lanjingzhige.createcobblemon.event;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_FairyTeleporter;
+import org.joml.Vector3f;
+
+import com.lanjingzhige.createcobblemon.CreateCobblemon;
+import com.lanjingzhige.createcobblemon.api.SubLevelCompat;
+import com.lanjingzhige.createcobblemon.Config;
+
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
+import net.minecraft.client.renderer.MultiBufferSource;
+
+@EventBusSubscriber(modid = CreateCobblemon.MODID, value = Dist.CLIENT)
+public class E_FairyTeleporter {
+
+	private static boolean renderingClippedEntity;
+	private static boolean entityClippingDisabledThisSession;
+
+	@SubscribeEvent
+	public static void clipPlayerAboveClosingShell(RenderPlayerEvent.Pre event) {
+		if (renderingClippedEntity)
+			return;
+		if (entityClippingDisabledThisSession)
+			return;
+
+		try {
+			clipPlayerAboveClosingShellSafely(event);
+		} catch (Throwable throwable) {
+			entityClippingDisabledThisSession = true;
+			renderingClippedEntity = false;
+			event.setCanceled(false);
+		}
+	}
+
+	@SubscribeEvent
+	public static void clipLivingEntityAboveClosingShell(RenderLivingEvent.Pre<?, ?> event) {
+		if (event.getEntity() instanceof Player)
+			return;
+		if (renderingClippedEntity)
+			return;
+		if (entityClippingDisabledThisSession)
+			return;
+
+		try {
+			clipLivingEntityAboveClosingShellSafely(event);
+		} catch (Throwable throwable) {
+			entityClippingDisabledThisSession = true;
+			renderingClippedEntity = false;
+			event.setCanceled(false);
+		}
+	}
+
+	private static void clipPlayerAboveClosingShellSafely(RenderPlayerEvent.Pre event) {
+		if (!Config.ENABLE_SHULKER_TELEPORTER_PLAYER_CLIPPING.get())
+			return;
+
+		Player player = event.getEntity();
+		CBE_FairyTeleporter teleporter = findRelevantTeleporter(player, event.getPartialTick());
+		if (teleporter == null)
+			return;
+		// The legacy clipping plane is expressed in world Y. Do not activate it for a
+		// transformed sublevel until its local lid plane is projected into view space.
+		if (SubLevelCompat.getContaining(player.level(), teleporter.getBlockPos()) != null)
+			return;
+
+		if (player == Minecraft.getInstance().player
+			&& Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON)
+			return;
+		if (!(player instanceof AbstractClientPlayer clientPlayer))
+			return;
+
+		event.setCanceled(true);
+
+		MultiBufferSource clippedBuffer = createClippedBuffer(event.getMultiBufferSource(), teleporter,
+			event.getPartialTick());
+		float yaw = Mth.lerp(event.getPartialTick(), player.yRotO, player.getYRot());
+
+		try {
+			renderingClippedEntity = true;
+			event.getRenderer()
+				.render(clientPlayer, yaw, event.getPartialTick(), event.getPoseStack(), clippedBuffer,
+					event.getPackedLight());
+		} finally {
+			renderingClippedEntity = false;
+		}
+	}
+
+	private static <T extends LivingEntity, M extends EntityModel<T>> void clipLivingEntityAboveClosingShellSafely(
+		RenderLivingEvent.Pre<T, M> event) {
+		if (!Config.ENABLE_SHULKER_TELEPORTER_PLAYER_CLIPPING.get())
+			return;
+
+		@SuppressWarnings("unchecked")
+		T entity = (T) event.getEntity();
+		CBE_FairyTeleporter teleporter = findRelevantTeleporter(entity, event.getPartialTick());
+		if (teleporter == null)
+			return;
+		if (SubLevelCompat.getContaining(entity.level(), teleporter.getBlockPos()) != null)
+			return;
+
+		event.setCanceled(true);
+		MultiBufferSource clippedBuffer = createClippedBuffer(event.getMultiBufferSource(), teleporter,
+			event.getPartialTick());
+		float yaw = Mth.lerp(event.getPartialTick(), entity.yRotO, entity.getYRot());
+
+		try {
+			renderingClippedEntity = true;
+			LivingEntityRenderer<T, M> renderer = event.getRenderer();
+			renderer.render(entity, yaw, event.getPartialTick(), event.getPoseStack(), clippedBuffer,
+				event.getPackedLight());
+		} finally {
+			renderingClippedEntity = false;
+		}
+	}
+
+	private static MultiBufferSource createClippedBuffer(MultiBufferSource bufferSource,
+                                                         CBE_FairyTeleporter teleporter, float partialTick) {
+		Vec3 camera = Minecraft.getInstance()
+			.gameRenderer
+			.getMainCamera()
+			.getPosition();
+		float cameraPitch = Minecraft.getInstance()
+			.gameRenderer
+			.getMainCamera()
+			.getXRot();
+		double clipY = teleporter.getTopShellTopY(partialTick) - camera.y;
+		double pitchRadians = Math.toRadians(cameraPitch);
+		Vector3f clipNormal = new Vector3f(0.0f, (float) Math.cos(pitchRadians), (float) Math.sin(pitchRadians));
+		return renderType -> new YClippingVertexConsumer(bufferSource.getBuffer(renderType), clipNormal, clipY);
+	}
+
+	public static Vec3 getFirstPersonCameraOffset(Player player, float partialTick) {
+		CBE_FairyTeleporter teleporter = findRelevantTeleporter(player, partialTick);
+		if (teleporter == null)
+			return Vec3.ZERO;
+		double localYOffset =
+			teleporter.getTopShellYOffset(partialTick) - CBE_FairyTeleporter.TOP_SHELL_OPEN_Y;
+		return SubLevelCompat.localOffsetToRenderWorld(player.level(), teleporter.getBlockPos(),
+			new Vec3(0.0d, localYOffset, 0.0d), partialTick);
+	}
+
+	private static CBE_FairyTeleporter findRelevantTeleporter(LivingEntity entity, float partialTick) {
+		Level level = entity.level();
+		CBE_FairyTeleporter[] best = new CBE_FairyTeleporter[1];
+		float[] bestProgress = new float[1];
+		SubLevelCompat.forEachIncludingEntitySpace(level, entity.position(), entity, (subLevel, center) -> {
+			CBE_FairyTeleporter candidate = findRelevantTeleporter(level, entity, center, partialTick);
+			if (candidate == null)
+				return;
+			float progress = candidate.getClosingProgress(partialTick);
+			if (best[0] == null || progress > bestProgress[0]) {
+				best[0] = candidate;
+				bestProgress[0] = progress;
+			}
+		});
+		return best[0];
+	}
+
+	private static CBE_FairyTeleporter findRelevantTeleporter(Level level, LivingEntity entity,
+                                                              BlockPos center, float partialTick) {
+		CBE_FairyTeleporter best = null;
+		float bestProgress = 0.0f;
+		for (BlockPos pos : BlockPos.betweenClosed(center.offset(-1, -1, -1), center.offset(1, 4, 1))) {
+			BlockEntity blockEntity = level.getBlockEntity(pos);
+			if (!(blockEntity instanceof CBE_FairyTeleporter teleporter))
+				continue;
+			float progress = teleporter.getClosingProgress(partialTick);
+			if (progress <= 0)
+				continue;
+			if (!teleporter.isEntityInTeleportArea(entity))
+				continue;
+			if (best == null || progress > bestProgress) {
+				best = teleporter;
+				bestProgress = progress;
+			}
+		}
+		return best;
+	}
+
+	private static class YClippingVertexConsumer implements VertexConsumer {
+		private final VertexConsumer wrapped;
+		private final Vector3f clipNormal;
+		private final double clipDistance;
+		private final List<ClippedVertex> quad = new ArrayList<>(4);
+		private ClippedVertex current = new ClippedVertex();
+
+		private YClippingVertexConsumer(VertexConsumer wrapped, Vector3f clipNormal, double clipDistance) {
+			this.wrapped = wrapped;
+			this.clipNormal = clipNormal;
+			this.clipDistance = clipDistance;
+		}
+
+		@Override
+		public VertexConsumer addVertex(float x, float y, float z) {
+			current = new ClippedVertex();
+			current.x = x;
+			current.y = y;
+			current.z = z;
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setColor(int red, int green, int blue, int alpha) {
+			current.red = red;
+			current.green = green;
+			current.blue = blue;
+			current.alpha = alpha;
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv(float u, float v) {
+			current.u = u;
+			current.v = v;
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv1(int u, int v) {
+			current.overlay = u | v << 16;
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv2(int u, int v) {
+			current.light = u | v << 16;
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setNormal(float x, float y, float z) {
+			current.normalX = x;
+			current.normalY = y;
+			current.normalZ = z;
+			quad.add(current.copy());
+			if (quad.size() < 4)
+				return this;
+			emitClippedQuad(quad);
+			quad.clear();
+			return this;
+		}
+
+		private void emitClippedQuad(List<ClippedVertex> source) {
+			List<ClippedVertex> clipped = clip(source);
+			if (clipped.size() < 3)
+				return;
+			for (int i = 1; i < clipped.size() - 1; i++)
+				emitDegenerateQuad(clipped.get(0), clipped.get(i), clipped.get(i + 1));
+		}
+
+		private List<ClippedVertex> clip(List<ClippedVertex> source) {
+			List<ClippedVertex> result = new ArrayList<>();
+			for (int i = 0; i < source.size(); i++) {
+				ClippedVertex current = source.get(i);
+				ClippedVertex previous = source.get((i + source.size() - 1) % source.size());
+				double currentDistance = signedDistanceToClipPlane(current);
+				double previousDistance = signedDistanceToClipPlane(previous);
+				boolean currentInside = currentDistance <= 0;
+				boolean previousInside = previousDistance <= 0;
+
+				if (currentInside != previousInside)
+					result.add(ClippedVertex.lerp(previous, current,
+						-previousDistance / (currentDistance - previousDistance)));
+				if (currentInside)
+					result.add(current);
+			}
+			return result;
+		}
+
+		private double signedDistanceToClipPlane(ClippedVertex vertex) {
+			return vertex.x * clipNormal.x() + vertex.y * clipNormal.y() + vertex.z * clipNormal.z() - clipDistance;
+		}
+
+		private void emitDegenerateQuad(ClippedVertex a, ClippedVertex b, ClippedVertex c) {
+			emit(a);
+			emit(b);
+			emit(c);
+			emit(c);
+		}
+
+		private void emit(ClippedVertex vertex) {
+			wrapped.addVertex((float) vertex.x, (float) vertex.y, (float) vertex.z)
+				.setColor(vertex.red, vertex.green, vertex.blue, vertex.alpha)
+				.setUv(vertex.u, vertex.v)
+				.setOverlay(vertex.overlay)
+				.setLight(vertex.light)
+				.setNormal(vertex.normalX, vertex.normalY, vertex.normalZ);
+		}
+	}
+
+	private static class ClippedVertex {
+		private double x;
+		private double y;
+		private double z;
+		private int red = 255;
+		private int green = 255;
+		private int blue = 255;
+		private int alpha = 255;
+		private float u;
+		private float v;
+		private int overlay;
+		private int light;
+		private float normalX;
+		private float normalY = 1;
+		private float normalZ;
+
+		private ClippedVertex copy() {
+			ClippedVertex copy = new ClippedVertex();
+			copy.x = x;
+			copy.y = y;
+			copy.z = z;
+			copy.red = red;
+			copy.green = green;
+			copy.blue = blue;
+			copy.alpha = alpha;
+			copy.u = u;
+			copy.v = v;
+			copy.overlay = overlay;
+			copy.light = light;
+			copy.normalX = normalX;
+			copy.normalY = normalY;
+			copy.normalZ = normalZ;
+			return copy;
+		}
+
+		private static ClippedVertex lerp(ClippedVertex from, ClippedVertex to, double t) {
+			ClippedVertex result = new ClippedVertex();
+			result.x = Mth.lerp(t, from.x, to.x);
+			result.y = Mth.lerp(t, from.y, to.y);
+			result.z = Mth.lerp(t, from.z, to.z);
+			result.red = Mth.floor(Mth.lerp(t, from.red, to.red));
+			result.green = Mth.floor(Mth.lerp(t, from.green, to.green));
+			result.blue = Mth.floor(Mth.lerp(t, from.blue, to.blue));
+			result.alpha = Mth.floor(Mth.lerp(t, from.alpha, to.alpha));
+			result.u = (float) Mth.lerp(t, from.u, to.u);
+			result.v = (float) Mth.lerp(t, from.v, to.v);
+			result.overlay = from.overlay;
+			result.light = from.light;
+			result.normalX = (float) Mth.lerp(t, from.normalX, to.normalX);
+			result.normalY = (float) Mth.lerp(t, from.normalY, to.normalY);
+			result.normalZ = (float) Mth.lerp(t, from.normalZ, to.normalZ);
+			return result;
+		}
+	}
+
+	private E_FairyTeleporter() {}
+}

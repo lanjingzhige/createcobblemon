@@ -9,8 +9,7 @@ import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import com.lanjingzhige.createcobblemon.recipe.recipes.CR_Garbage;
-import com.simibubi.create.foundation.advancement.AllAdvancements;
+import com.lanjingzhige.createcobblemon.recipe.recipes.CRE_Garbage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +28,7 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
 
     public static final int DEFAULT_RECIPE_TIME = 100;
 
-    public CR_Garbage lastRecipe;
+    public CRE_Garbage lastRecipe;
 
     public CBE_Garbage(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -57,7 +56,7 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
         return Mth.clamp((int) Math.abs(getSpeed() / 16f + attack / 16f), 1, 512);
     }
 
-    private int getProcessingTime(CR_Garbage recipe) {
+    private int getProcessingTime(CRE_Garbage recipe) {
         int duration = recipe.getProcessingDuration();
         return duration > 0 ? duration : DEFAULT_RECIPE_TIME;
     }
@@ -97,7 +96,7 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
 
         SingleRecipeInput inventoryIn = new SingleRecipeInput(inputInv.getStackInSlot(0));
         if (lastRecipe == null || !lastRecipe.matches(inventoryIn, level)) {
-            Optional<RecipeHolder<CR_Garbage>> recipe = ModRecipe.CLEAN.find(inventoryIn, level);
+            Optional<RecipeHolder<CRE_Garbage>> recipe = ModRecipe.CLEAN.find(inventoryIn, level);
             if (!recipe.isPresent()) {
                 timer = DEFAULT_RECIPE_TIME;
                 sendData();
@@ -120,7 +119,7 @@ public class CBE_Garbage extends CBE_CreatPokemonMachine {
         SingleRecipeInput inventoryIn = new SingleRecipeInput(inputInv.getStackInSlot(0));
 
         if (lastRecipe == null || !lastRecipe.matches(inventoryIn, level)) {
-            Optional<RecipeHolder<CR_Garbage>> recipe = ModRecipe.CLEAN.find(inventoryIn, level);
+            Optional<RecipeHolder<CRE_Garbage>> recipe = ModRecipe.CLEAN.find(inventoryIn, level);
             if (recipe.isEmpty())
                 return;
             lastRecipe = recipe.get().value();

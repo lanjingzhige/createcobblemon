@@ -5,7 +5,9 @@ import com.cobblemon.mod.common.client.gui.pc.PCGUI;
 import com.cobblemon.mod.common.client.storage.ClientPC;
 import com.cobblemon.mod.common.client.storage.ClientParty;
 import com.lanjingzhige.createcobblemon.client.gui.TreadmillPCGUIConfiguration;
+import com.lanjingzhige.createcobblemon.gui.screen.CS_FairyTeleporter;
 import com.lanjingzhige.createcobblemon.network.packet.TreadmillOpenScreenPacket;
+import com.lanjingzhige.createcobblemon.gui.ModMenuTypes;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -13,6 +15,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -30,6 +33,10 @@ public class CreateCobblemonClient {
         CreateCobblemon.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 
+    @SubscribeEvent
+    static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(ModMenuTypes.SHULKER_TELEPORTER.get(), CS_FairyTeleporter::new);
+    }
 
     public static void handleOpenTreadmill(TreadmillOpenScreenPacket payload, IPayloadContext context) {
         context.enqueueWork(() -> {
