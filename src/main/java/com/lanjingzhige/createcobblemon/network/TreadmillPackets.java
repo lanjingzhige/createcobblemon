@@ -63,6 +63,8 @@ public class TreadmillPackets {
                     blockEntity.setPokemon(player, payload.pokemonUuid(),"rock");
                 if (level.getBlockEntity(payload.pos()) instanceof CBE_Steel blockEntity)
                     blockEntity.setPokemon(player, payload.pokemonUuid(),"steel");
+                if (level.getBlockEntity(payload.pos()) instanceof CBE_EvTrainer blockEntity)
+                    blockEntity.setPokemon(player, payload.pokemonUuid());
 
             }
         });

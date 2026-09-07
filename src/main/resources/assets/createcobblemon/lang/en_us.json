@@ -19,5 +19,17 @@
   "createcobblemon.shulker_teleporter.new_address": "New Address",
   "createcobblemon.shulker_teleporter.no_addresses": "No addresses found",
   "createcobblemon.shulker_teleporter.own_address.tooltip": "Name this teleporter so others can target it.",
-  "createcobblemon.shulker_teleporter.select_target": "Select as target"
+  "createcobblemon.shulker_teleporter.select_target": "Select as target",
+  "block.createcobblemon.cb_ev_trainer": "EV Trainer",
+  "contraptions.ev_stat_mode": "Select Stat",
+  "contraptions.ev_value": "EV Value",
+  "create.contraptions.movement_ev_mode.ev_hp": "HP",
+  "create.contraptions.movement_ev_mode.ev_attack": "Attack",
+  "create.contraptions.movement_ev_mode.ev_defence": "Defense",
+  "create.contraptions.movement_ev_mode.ev_special_attack": "Sp. Atk",
+  "create.contraptions.movement_ev_mode.ev_special_defence": "Sp. Def",
+  "create.contraptions.movement_ev_mode.ev_speed": "Speed",
+  "block.createcobblemon.cb_time_core": "Time Machine Core",
+  "block.createcobblemon.cb_time_arm_small": "Time Machine Small Arm",
+  "block.createcobblemon.cb_time_arm_large": "Time Machine Large Arm"
 }

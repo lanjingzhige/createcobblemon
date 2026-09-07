@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "createcobblemon:block/cb_ev_trainer" },
+    "facing=east": { "model": "createcobblemon:block/cb_ev_trainer", "y": 90 },
+    "facing=south": { "model": "createcobblemon:block/cb_ev_trainer", "y": 180 },
+    "facing=west": { "model": "createcobblemon:block/cb_ev_trainer", "y": 270 }
+  }
+}

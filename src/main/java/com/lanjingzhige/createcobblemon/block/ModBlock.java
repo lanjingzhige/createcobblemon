@@ -102,6 +102,42 @@ public class ModBlock {
             .transform(customItemModel())
             .register();
 
+    public static final BlockEntry<CB_EvTrainer> CB_EV_TRAINER = REGISTRATE.block("cb_ev_trainer", CB_EvTrainer::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
+            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 4.0))
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_TimeCore> CB_TIME_CORE = REGISTRATE.block("cb_time_core", CB_TimeCore::new)
+            .initialProperties(SharedProperties::wooden)
+            .properties(BlockBehaviour.Properties::noOcclusion)
+            .transform(axeOrPickaxe())
+            .onRegister(block -> BlockStressValues.CAPACITIES.register(block, () -> 4.0))
+            .item()
+            .transform(customItemModel())
+            .register();
+
+    public static final BlockEntry<CB_TimeArmSmall> CB_TIME_ARM_SMALL =
+            REGISTRATE.block("cb_time_arm_small", CB_TimeArmSmall::new)
+                    .initialProperties(SharedProperties::wooden)
+                    .properties(BlockBehaviour.Properties::noOcclusion)
+                    .transform(axeOrPickaxe())
+                    .item()
+                    .transform(customItemModel())
+                    .register();
+
+    public static final BlockEntry<CB_TimeArmLarge> CB_TIME_ARM_LARGE =
+            REGISTRATE.block("cb_time_arm_large", CB_TimeArmLarge::new)
+                    .initialProperties(SharedProperties::wooden)
+                    .properties(BlockBehaviour.Properties::noOcclusion)
+                    .transform(axeOrPickaxe())
+                    .item()
+                    .transform(customItemModel())
+                    .register();
+
     public static void register() {
         // 静态字段在类加载时完成注册
     }

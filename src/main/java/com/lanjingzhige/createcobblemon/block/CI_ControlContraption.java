@@ -114,4 +114,38 @@ public interface CI_ControlContraption {
         }
 
     }
+
+    /**
+     * 基础点数（EV）训练器可选的目标属性。
+     * 与 MovementRockMode 等枚举一样，用于 ScrollOptionBehaviour 生成的可滑动选项滑块。
+     */
+    enum MovementEvMode implements INamedIconOptions {
+
+        EV_HP(AllIcons.I_FILL),
+        EV_ATTACK(AllIcons.I_TARGET),
+        EV_DEFENCE(AllIcons.I_CONFIG_LOCKED),
+        EV_SPECIAL_ATTACK(AllIcons.I_ROTATE_CCW),
+        EV_SPECIAL_DEFENCE(AllIcons.I_CONFIG_UNLOCKED),
+        EV_SPEED(AllIcons.I_3x3),
+        ;
+
+        private String translationKey;
+        private AllIcons icon;
+
+        private MovementEvMode(AllIcons icon) {
+            this.icon = icon;
+            translationKey = "create.contraptions.movement_ev_mode." + Lang.asId(name());
+        }
+
+        @Override
+        public AllIcons getIcon() {
+            return icon;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return translationKey;
+        }
+
+    }
 }

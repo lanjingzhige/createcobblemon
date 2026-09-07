@@ -28,5 +28,18 @@
   "create.contraptions.movement_steel_mode.move_deepslate_copper_ore": "该钢系宝可梦以自身能力开始制造铜矿",
   "create.contraptions.movement_steel_mode.move_deepslate_iron_ore": "该钢系宝可梦以自身能力开始制造铁矿",
   "create.contraptions.movement_steel_mode.move_deepslate_gold_ore": "该钢系宝可梦以自身能力开始制造金矿",
-  "create.contraptions.movement_steel_mode.move_deepslate_zinc_ore": "该钢系宝可梦以自身能力开始制造锌矿"
+  "create.contraptions.movement_steel_mode.move_deepslate_zinc_ore": "该钢系宝可梦以自身能力开始制造锌矿",
+  "block.createcobblemon.cb_ev_trainer": "基础点数训练器",
+  "contraptions.ev_stat_mode": "选择要修改的属性",
+  "contraptions.ev_value": "基础点数数值",
+  "create.contraptions.movement_ev_mode.ev_hp": "生命值 (HP)",
+  "create.contraptions.movement_ev_mode.ev_attack": "攻击 (Attack)",
+  "create.contraptions.movement_ev_mode.ev_defence": "防御 (Defense)",
+  "create.contraptions.movement_ev_mode.ev_special_attack": "特攻 (Sp. Atk)",
+  "create.contraptions.movement_ev_mode.ev_special_defence": "特防 (Sp. Def)",
+  "create.contraptions.movement_ev_mode.ev_speed": "速度 (Speed)",
+  "block.createcobblemon.cb_time_core": "时光机核心",
+  "block.createcobblemon.cb_time_arm_small": "时光机小臂",
+  "block.createcobblemon.cb_time_arm_large": "时光机大臂",
+  "createcobblemon.timemachine.hint": "时光机：核心 + 8 个小臂 + 16 个大臂（5x5）。\n手持小臂/大臂右键核心可自动摆放到位。\n运行（获得旋转动力）时小臂顺时针、大臂逆时针张开旋转。\n将物品放到 6 个物品臂上（北、东北、东、东南、南、西南），\n若与自定义配方匹配则消耗物品并召唤配方指定的 70 级野生宝可梦，转速越快召唤越快。"
 }

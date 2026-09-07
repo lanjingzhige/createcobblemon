@@ -76,6 +76,30 @@ public class ModBlockEntity {
                     .renderer(() -> CR_Steel::new)
                     .register();
 
+    public static final BlockEntityEntry<CBE_EvTrainer> CBE_EV_TRAINER =
+            REGISTRATE.blockEntity("cbe_ev_trainer", CBE_EvTrainer::new)
+                    .validBlocks(ModBlock.CB_EV_TRAINER)
+                    .renderer(() -> CR_EvTrainer::new)
+                    .register();
+
+    public static final BlockEntityEntry<CBE_TimeCore> CBE_TIME_CORE =
+            REGISTRATE.blockEntity("cbe_time_core", CBE_TimeCore::new)
+                    .validBlocks(ModBlock.CB_TIME_CORE)
+                    .renderer(() -> CR_TimeCore::new)
+                    .register();
+
+    public static final BlockEntityEntry<CBE_TimeArmSmall> CBE_TIME_ARM_SMALL =
+            REGISTRATE.blockEntity("cbe_time_arm_small", CBE_TimeArmSmall::new)
+                    .validBlocks(ModBlock.CB_TIME_ARM_SMALL)
+                    .renderer(() -> CR_TimeArmSmall::new)
+                    .register();
+
+    public static final BlockEntityEntry<CBE_TimeArmLarge> CBE_TIME_ARM_LARGE =
+            REGISTRATE.blockEntity("cbe_time_arm_large", CBE_TimeArmLarge::new)
+                    .validBlocks(ModBlock.CB_TIME_ARM_LARGE)
+                    .renderer(() -> CR_TimeArmLarge::new)
+                    .register();
+
 
     public static void register() {
         // 静态字段在类加载时完成注册
