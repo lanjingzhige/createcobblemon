@@ -1,0 +1,13 @@
+{
+  "type": "createcobblemon:time_machine",
+  "inputs": [
+    { "item": "minecraft:golden_apple" },
+    { "item": "minecraft:golden_apple" },
+    { "item": "minecraft:golden_apple" },
+    { "item": "minecraft:golden_apple" },
+    { "item": "minecraft:golden_apple" },
+    { "item": "minecraft:golden_apple" }
+  ],
+  "species": "cobblemon:pikachu",
+  "level": 70
+}

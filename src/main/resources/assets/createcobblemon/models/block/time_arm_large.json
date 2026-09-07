@@ -1,0 +1,35 @@
+{
+  "format_version": "1.21.6",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "0": "create:block/andesite_casing",
+    "1": "create:block/gearbox",
+    "particle": "create:block/andesite_casing"
+  },
+  "elements": [
+    {
+      "from": [0, 5, 5],
+      "to": [16, 11, 11],
+      "faces": {
+        "north": {"uv": [0, 5, 16, 11], "texture": "#1"},
+        "east": {"uv": [0, 5, 6, 11], "texture": "#1"},
+        "south": {"uv": [0, 5, 16, 11], "texture": "#1"},
+        "west": {"uv": [0, 5, 6, 11], "texture": "#1"},
+        "up": {"uv": [0, 0, 16, 6], "texture": "#0"},
+        "down": {"uv": [0, 0, 16, 6], "texture": "#0"}
+      }
+    },
+    {
+      "from": [12, 3, 3],
+      "to": [16, 13, 13],
+      "faces": {
+        "north": {"uv": [0, 0, 4, 10], "texture": "#0"},
+        "east": {"uv": [0, 0, 10, 10], "texture": "#0"},
+        "south": {"uv": [0, 0, 4, 10], "texture": "#0"},
+        "west": {"uv": [0, 0, 10, 10], "texture": "#0"},
+        "up": {"uv": [0, 0, 4, 4], "texture": "#0"},
+        "down": {"uv": [0, 0, 4, 4], "texture": "#0"}
+      }
+    }
+  ]
+}

@@ -3,9 +3,11 @@ package com.lanjingzhige.createcobblemon;
 import com.lanjingzhige.createcobblemon.block.ModBlock;
 import com.lanjingzhige.createcobblemon.block.ModBlockEntity;
 import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.*;
+import com.lanjingzhige.createcobblemon.block.blockEntities.achieve.CBE_TimeArmSmall;
 import com.lanjingzhige.createcobblemon.api.CBMultiBlockLifecycle;
 import com.lanjingzhige.createcobblemon.network.TreadmillPackets;
 import com.lanjingzhige.createcobblemon.recipe.ModRecipe;
+import com.lanjingzhige.createcobblemon.recipe.timemachine.ModTimeMachineRecipe;
 import com.lanjingzhige.createcobblemon.gui.ModMenuTypes;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
@@ -50,6 +52,8 @@ public class CreateCobblemon {
         modEventBus.addListener(this::commonSetup);
 
         modEventBus.addListener(TreadmillPackets::register);
+        // 注意：这里不是监听事件，而是把配方注册表挂到 Mod 事件总线上（与 ModRecipe.register 相同用法）
+        ModTimeMachineRecipe.register(modEventBus);
 
 
         NeoForge.EVENT_BUS.register(this);
@@ -74,6 +78,7 @@ public class CreateCobblemon {
         modEventBus.addListener(CBE_Ground::registerCapabilities);
         modEventBus.addListener(CBE_Rock::registerCapabilities);
         modEventBus.addListener(CBE_Steel::registerCapabilities);
+        modEventBus.addListener(CBE_TimeArmSmall::registerCapabilities);
 
     }
 
